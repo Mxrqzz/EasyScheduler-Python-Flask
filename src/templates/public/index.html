@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Beauty Time</title>
+    <link rel="stylesheet" href="static/css/style.css" />
+  </head>
+  <body>
+    <!--Menu Superior-->
+    <div class="menu-superior">
+      <ul>
+        <li>
+          <a href="/">
+            <img
+              src="static/images/logo.svg"
+              alt="logo do BeautyTime"
+              width="335"
+              height="180"
+            />
+          </a>
+        </li>
+
+        <!--link para os outros paginas-->
+        <li><a href="/register">Cadastro</a></li>
+        <li><a href="/login">Login</a></li>
+        <li onclick="scrollToDiv('about')"><a href="#">Saiba Mais</a></li>
+      </ul>
+    </div>
+
+    <!--CONTEUDO DA PAGINA-->
+    <div class="panels">
+      <!--IMAGENS-->
+      <div class="containerImgs">
+        <!--imagem da esquerda-->
+        <div class="img-left">
+          <img
+            src="static/images/manicure.svg"
+            alt="manicure trabalhando"
+            width="400px"
+            height="585px"
+          />
+        </div>
+        <!--imagem do meio-->
+        <div class="img-mid">
+          <img
+            src="static/images/cabelereira.svg"
+            alt="cabelereira lavando cabelo de sua cliente"
+            width="400px"
+            height="585px"
+          />
+        </div>
+        <!--Imagem da direita-->
+        <div class="img-rigth">
+          <img
+            src="static/images/barbeiro.svg"
+            alt="Barbeiro mostrando resultado do corte para o seu cliente"
+            width="400px"
+            height="585px"
+          />
+        </div>
+      </div>
+
+      <!--Texto sobre o Beauty Time-->
+      <div id="about" class="about">
+        <h1>O que é o BeautyTime?</h1>
+        <br />
+        <h2>
+          O BeautyTime é uma plataforma online dedicada a otimizar o processo de
+          agendamento de serviços, proporcionando uma experiência prática e
+          eficaz tanto para os prestadores de serviços quanto para os clientes.
+          Em um mundo onde a tecnologia avança constantemente, reconhecemos a
+          necessidade de modernizar a forma como agendamos compromissos.
+        </h2>
+        <br />
+      </div>
+    </div>
+    <br /><br />
+
+    <!--botão Começar-->
+    <div class="start-btn">
+      <button class="button"><a href="/register">Comece já</a></button>
+    </div>
+    <script src="static/js/script.js"></script>
+  </body>
+</html>

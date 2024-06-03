@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Beauty Time - Perfil</title>
+    <link rel="stylesheet" href="static/css/style.css" />
+  </head>
+  <body>
+    <!--Menu Superior-->
+    <div class="menu-superior">
+      <ul>
+        <li>
+          <a href="/dashboardPro">
+            <img
+              src="static/images/logo.svg"
+              alt="Logo do Beauty Time"
+              width="335"
+              height="180"
+            />
+          </a>
+        </li>
+        <li><a href="/dashboardPro">Inicio</a></li>
+        <li><a href="/services">Serviços</a></li>
+        <li><a href="#">Notificações</a></li>
+        <li><a href="/logout">Sair</a></li>
+      </ul>
+    </div>
+    <!--Menu Lateral-->
+    <div class="menu esquerda">
+      <div class="menu-lateral">
+        <div class="perfil-info">
+          <img
+            id="profile-photo-sidebar"
+            src="https://via.placeholder.com/150"
+            alt="Foto de perfil"
+            class="photo-circle"
+          />
+          <h3>{{nome}} {{sobrenome}}</h3>
+          <h3>{{email}}</h3>
+          <h4>#{{id}}</h4>
+        </div>
+        <div class="config-group">
+          <h3 onclick="scrolltoDiv('cfg-account')">Configurações da conta</h3>
+
+          <div class="config-options">
+            <ul>
+              <li onclick="scrollToDiv('info-user')">Informações do Usuario</li>
+              <li onclick="scrollToDiv('info-login')">Informações de Login</li>
+              <li onclick="scrollToDiv('#')">Informações do Contato</li>
+              <li onclick="scrollToDiv('#')">Notificações</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--Configurações de Perfil-->
+    <div class="content">
+      <div id="cfg-account" class="cfg-account">
+        <h1>Configurações da conta</h1>
+        <p>Visualize e atualize os dados da sua conta.</p>
+      </div>
+      <div id="info-user" class="content-box">
+        <h2>Informações do Usúario:</h2>
+        <form
+          id="update-form"
+          action="/updateUserP"
+          method="post"
+          enctype="multipart/form-data"
+        >
+          <div class="inputs">
+            <div class="left-side">
+              <!--Nome-->
+              <div class="input-box">
+                <label for="name"
+                  >Nome:
+                  <br />
+                  <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    placeholder="{{nome}}"
+                    readonly
+                  />
+                </label>
+              </div>
+              <!--Sobrenome-->
+              <div class="input-box">
+                <label for="lastname"
+                  >Sobrenome:
+                  <br />
+                  <input
+                    type="text"
+                    id="lastname"
+                    name="lastname"
+                    placeholder="{{sobrenome}}"
+                    readonly
+                  />
+                </label>
+              </div>
+            </div>
+            <div class="right-side">
+              <!--FOTO-->
+              <div class="input-box">
+                <label for="photo"
+                  >Foto de Perfil:
+                  <div class="photo-perfil">
+                    <img
+                      alt=""
+                      class="photo-circle"
+                      id="profile-photo"
+                      src="{{photo or 'https://via.placeholder.com/150'}}"
+                    />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      class="file-input"
+                      id="file-input"
+                      name="photo"
+                    />
+                    <!--BOTAO FOTO-->
+                    <label
+                      for="file-input"
+                      class="costum-file-input"
+                      id="upload-button"
+                      style="display: none"
+                      >Alterar Imagem</label
+                    >
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="button-cfg">
+            <button id="edit-button">Editar</button>
+            <button id="save-button" style="display: none">Salvar</button>
+            <button id="cancel-button" style="display: none">Cancelar</button>
+          </div>
+        </form>
+      </div>
+      <div id="info-login" class="content-box">
+        <!--titulo-->
+        <h2>Informações de Login:</h2>
+          <form id="login-edit-form" method="POST" action="/updateLoginEmail">
+            <div class="inputs">
+              <div class="left-side">
+                <!--Email-->
+                <div class="input-box">
+                  <label for="new_email">
+                    Email:
+                    <br />
+                    <input
+                      type="email"
+                      name="new_email"
+                      id="new_email"
+                      placeholder="{{email}}"
+                      readonly
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="button-cfg">
+              <button id="login-edit-button">Editar</button>
+              <button id="login-save-button" style="display: none">
+                Salvar
+              </button>
+              <button id="login-cancel-button" style="display: none">
+                Cancelar
+              </button>
+            </div>
+          </form>
+          <form
+            id="login-edit-form-password"
+            method="POST"
+            action="/updateLoginPassword"
+          >
+            <div class="inputs">
+              <div class="left-side">
+                <!--Senha-->
+                <div class="input-box">
+                  <label for="currentPassword">
+                    Senha Atual:
+                    <br />
+                    <input
+                      type="password"
+                      id="currentPassword"
+                      name="currentPassword"
+                      placeholder="*********"
+                      readonly
+                    />
+                  </label>
+                </div>
+              </div>
+              <div class="new-password" style="display: none">
+                <!--Nova Senha-->
+                <div class="input-box">
+                  <label for="newPassword">
+                    Nova senha:
+                    <br />
+                    <input
+                      type="password"
+                      name="newPassword"
+                      id="newPassword"
+                      placeholder="insira a nova senha"
+                    />
+                  </label>
+                </div>
+                <!--Confirmar nova senha-->
+                <div class="input-box">
+                  <label for="confirmNewPassword">
+                    Confirme a Nova senha:
+                    <br />
+                    <input
+                      type="password"
+                      id="confirmNewPassword"
+                      name="confirmNewPassword"
+                      placeholder="Confirme a nova senha"
+                    />
+                  </label>
+                  <p></p>
+                </div>
+                <p style="color: blueviolet; font-weight: 300; font-size: 13px">
+                  Para alterar sua senha insira sua senha atual
+                </p>
+              </div>
+            </div>
+            <div class="button_cfg">
+              <button id="password-edit-button">Editar</button>
+              <button id="password-save-button" style="display: none">
+                Salvar Senha
+              </button>
+              <button id="password-cancel-button" style="display: none">
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+        <div id="info-phone" class="content-box">
+          <h2>Telefones:</h2>
+          <form id="phone-form" method="POST" action="/updatePhone">
+            <div class="telefones">
+              <div class="input-box">
+                <label for="phone1">Telefone 1:<br />
+                  <input type="tel" name="phone1" id="phone1" placeholder="Telefone 1" />
+                </label>
+              </div>
+              <div class="input-box">
+                <label for="phone2">Telefone 2:<br />
+                  <input type="tel" name="phone2" id="phone2" placeholder="Telefone 2" />
+                </label>
+              </div>
+            </div>
+            <div class="button-cfg">
+              <button type="submit">Salvar</button>
+            </div>
+          </form>
+        </div>
+    </div>
+  </body>
+  <script src="static/js/script.js"></script>
+</html>

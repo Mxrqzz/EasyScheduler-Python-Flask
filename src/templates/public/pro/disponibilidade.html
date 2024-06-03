@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Beauty Time - Disponibilidade Profissional</title>
+    <link rel="stylesheet" href="static/css/style.css" />
+  </head>
+  <body>
+    <!--MENU TOPO-->
+    <div class="menu-superior">
+      <ul>
+        <li>
+          <a href="/dashboardPro"
+            ><img
+              src="static/images/logo.svg"
+              alt="logo do BeautyTime"
+              width="335"
+              height="180"
+          /></a>
+        </li>
+        <li><a href="/services">Serviços</a></li>
+        <li><a href="#">Notificações</a></li>
+        <li><a href="/perfilPro">Perfil</a></li>
+        <li><a href="/logout">Sair</a></li>
+      </ul>
+    </div>
+    <div class="container">
+    <h1>Definir Disponibilidade</h1>
+    <form action="/disponibilidade" method="post">
+      <label for="dia_semana">Dia da Semana:</label>
+      <select name="dia_semana" id="dia_semana" required>
+        <option value="Segunda">Segunda</option>
+        <option value="Terça">Terça</option>
+        <option value="Quarta">Quarta</option>
+        <option value="Quinta">Quinta</option>
+        <option value="Sexta">Sexta</option>
+        <option value="Sábado">Sábado</option>
+        <option value="Domingo">Domingo</option>
+      </select>
+      <br />
+      <label for="hora_inicio">Hora de Início:</label>
+      <input type="time" name="hora_inicio" id="hora_inicio" required />
+      <br />
+      <label for="hora_fim">Hora de Fim:</label>
+      <input type="time" name="hora_fim" id="hora_fim" required />
+      <br />
+      <button class="button" type="submit">Salvar</button>
+    </form>
+    <h2>Disponibilidades Atuais</h2>
+    <ul>
+      {% for disponibilidade in disponibilidades %}
+      <li>
+        {{ disponibilidade[2] }}: {{ disponibilidade[3] }} - {{
+        disponibilidade[4] }}
+        <form action="{{ url_for('remove_schedule') }}" method="post" style="display: inline">
+          <input type="hidden" name="_method" value="delete" />
+          <input
+            type="hidden"
+            name="disponibilidade_id"
+            value="{{ disponibilidade[0] }}"
+          />
+          <button type="submit">Remover</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+</div>
+  </body>
+</html>

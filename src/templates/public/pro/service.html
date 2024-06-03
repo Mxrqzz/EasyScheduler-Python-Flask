@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="static/css/style.css" />
+    <title>Beauty Time - Serviços</title>
+  </head>
+  <body>
+    <!--Menu Superior-->
+    <div class="menu-superior">
+      <ul>
+        <li>
+          <a href="/dashboardPro">
+            <img
+              src="static/images/logo.svg"
+              alt="Logo do Beauty Time"
+              width="335"
+              height="180"
+            />
+          </a>
+        </li>
+        <li><a href="/dashboardPro">Inicio</a></li>
+        <li><a href="/perfilPro">Perfil</a></li>
+        <li><a href="#">Notificações</a></li>
+        <li><a href="/logout">Sair</a></li>
+      </ul>
+    </div>
+    <!--Adicionar Serviços-->
+    <div class="container-form">
+      <div class="title">
+        <h1>Serviços</h1>
+        <p>Adicione ou remova aqui os seus serviços oferecidos.</p>
+        <span>Após adicionar um serviço atualize a página</span>
+        
+      </div>
+      <!--Formulario-->
+      <div class="container-services">
+        <div class="form">
+          <h3>Adicionar um novo serviço:</h3>
+          <form
+            id="service-form"
+            class="formulario"
+            action="/services"
+            method="post"
+          >
+            <div class="input-group">
+              <!--Serviço-->
+              <div class="input-box">
+                <label for="service">Serviço:</label>
+                <input
+                  id="service"
+                  type="text"
+                  name="service"
+                  maxlength="40"
+                  required
+                />
+                <span class="error-msg" style="display: none"
+                  >insira um Serviço:</span
+                >
+              </div>
+              <!--Preço-->
+              <div class="input-box">
+                <label for="price">Preço:</label>
+                <input
+                  id="price"
+                  type="number"
+                  name="price"
+                  step="0.1"
+                  maxlength="10"
+                  required
+                />
+                <span class="error-msg" style="display: none"
+                  >insira um preço</span
+                >
+              </div>
+              <!--Tempo-->
+              <div class="input-box">
+                <label for="time">Tempo estimado:</label>
+                <input
+                  id="time"
+                  type="time"
+                  name="time"
+                  pattern="[0-9]{2}:[0-9]{2}"
+                  required
+                />
+                <span class="error-msg" style="display: none"
+                  >insira um tempo estimado</span
+                >
+              </div>
+              <div class="input-box">
+                <label for="description">Descrição:</label>
+                <input
+                  id="description"
+                  type="text"
+                  name="description"
+                  maxlength="200"
+                  required
+                />
+                <span class="error-msg" style="display: none"
+                  >insira uma descrição</span
+                >
+              </div>
+            </div>
+            <!-- Profissional ID -->
+            <div class="input-box">
+              <input type="hidden" name="profissional_id" value="{{id}}" />
+            </div>
+            <!--Botão-->
+            <div class="btn-form">
+              <button class="button">
+                Adicionar
+              </button>
+            </div>
+          </form>
+        </div>
+        <div class="list-services">
+          <h3 class="sticky-title">Seus serviços Adicionados:</h3>
+          <ul class="services-list">
+            {% for service in services %}
+            <li>
+              <h4>{{ service [0] }}</h4>
+              <p>Preço: {{ service [1] }},00 R$</p>
+              <p>Tempo: {{ service [2] }}</p>
+              <p>Descrição: {{ service [3] }}</p>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="static/js/service.js"></script>
+</html>

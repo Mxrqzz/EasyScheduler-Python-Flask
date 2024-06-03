@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt_br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Beauty Time - Cadastro Profissional</title>
+    <link rel="stylesheet" href="static/css/style.css" />
+  </head>
+  <body>
+    <!--Menu Superior-->
+    <div class="menu-superior">
+      <ul>
+        <li>
+          <a href="/"
+            ><img
+              src="static/images/logo.svg"
+              alt="logo do BeautyTime"
+              width="335"
+              height="180"
+          /></a>
+        </li>
+        <li><a href="/login">Já tem uma conta? Faça login</a></li>
+      </ul>
+    </div>
+
+    <!--Container-->
+
+    <div class="container-form">
+      <!--Registre-se-->
+
+      <div class="title">
+        <h1>Registre-se</h1>
+        <p>Já tem uma conta? <a href="/login">Faça login</a></p>
+      </div>
+      <!--Formulario-->
+
+      <div class="form">
+        <form id="form" class="formulario" action="/formPro" method="post">
+          <div class="input-group">
+            <!--Nome-->
+            <div class="input-box">
+              <label for="name">Nome:</label>
+              <input
+                id="name"
+                type="text"
+                name="name"
+                maxlength="20"
+                autocomplete="name"
+                required
+              />
+              <span class="error-msg" style="display: none">
+                Preencha um nome.
+              </span>
+            </div>
+
+            <!--Sobrenome-->
+            <div class="input-box">
+              <label for="lastname">Sobrenome:</label>
+              <input
+                id="lastname"
+                type="text"
+                name="lastname"
+                maxlength="30"
+                required
+              />
+              <span class="error-msg" style="display: none">
+                Preencha um sobrenome.
+              </span>
+            </div>
+
+            <!--Email-->
+            <div class="input-box">
+              <label for="email">E-mail:</label>
+              <input
+                id="email"
+                type="email"
+                name="email"
+                maxlength="50"
+                autocomplete="email"
+                required
+              />
+              <span class="error-msg" style="display: none">
+                Preencha um e-mail válido.
+              </span>
+            </div>
+
+            <!--Senha-->
+            <div class="input-box">
+              <label for="password">Senha</label>
+              <input
+                id="password"
+                type="password"
+                name="password"
+                autocomplete="current-password"
+                maxlength="25"
+                required
+              />
+              <span class="error-msg" style="display: none">
+                Preencha uma senha.
+              </span>
+            </div>
+
+            <!--Confirmação Senha-->
+            <div class="input-box">
+              <label for="confirmPassword">Confirme sua senha</label>
+              <input
+                id="confirmPassword"
+                type="password"
+                name="confirmPassword"
+                maxlength="25"
+                required
+              />
+              <span class="error-msg" style="display: none">
+                Confirme sua senha.
+              </span>
+            </div>
+
+            <!--Botão-->
+            <div class="btn-form">
+              <button  class="button" type="submit" name="submit">Continuar</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="static/js/form.js"></script>
+  </body>
+</html>

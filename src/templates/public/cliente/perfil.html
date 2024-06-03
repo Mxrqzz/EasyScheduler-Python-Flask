@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Beauty Time - Perfil</title>
+    <link rel="stylesheet" href="static/css/style.css" />
+  </head>
+  <body>
+    <!--Menu Superior-->
+    <div class="menu-superior">
+      <ul>
+        <li>
+          <a href="/dashboardClient">
+            <img
+              src="static/images/logo.svg"
+              alt="Logo do Beauty Time"
+              width="335"
+              height="180"
+            />
+          </a>
+        </li>
+        <li><a href="/dashboardClient">Inicio</a></li>
+        <li><a href="#">Notificações</a></li>
+        <li><a href="/logout">Sair</a></li>
+      </ul>
+    </div>
+    <!--Menu Lateral-->
+    <div class="menu esquerda">
+      <div class="menu-lateral">
+        <div class="perfil-info">
+          <img
+            id="profile-photo-sidebar"
+            src="https://via.placeholder.com/150"
+            alt="Foto de perfil"
+            class="photo-circle"
+          />
+          <h3>{{nome}} {{sobrenome}}</h3>
+          <h3>{{email}}</h3>
+          <h4>#{{id}}</h4>
+        </div>
+        <div class="config-group">
+          <h3 onclick="scrolltoDiv('cfg-account')">Configurações da conta</h3>
+
+          <div class="config-options">
+            <ul>
+              <li onclick="scrollToDiv('info-user')">Informações do Usuario</li>
+              <li onclick="scrollToDiv('#')">Informações de Login</li>
+              <li onclick="scrollToDiv('#')">Informações do Contato</li>
+              <li onclick="scrollToDiv('#')">Notificações</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--Configurações de Perfil-->
+    <div class="content">
+      <div id="cfg-account" class="cfg-account">
+        <h1>Configurações da conta</h1>
+        <p>Visualize e atualize os dados da sua conta.</p>
+      </div>
+      <div id="info-user" class="content-box">
+        <h2>Informações do Usúario:</h2>
+        <form
+          id="update-form"
+          action="/updateUserC"
+          method="post"
+          enctype="multipart/form-data"
+        >
+          <div class="inputs">
+            <div class="left-side">
+              <!--Nome-->
+              <div class="input-box">
+                <label for="name"
+                  >Nome:
+                  <br />
+                  <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    placeholder="{{nome}}"
+                    readonly
+                  />
+                </label>
+              </div>
+              <!--Sobrenome-->
+              <div class="input-box">
+                <label for="lastname"
+                  >Sobrenome:
+                  <br />
+                  <input
+                    type="text"
+                    id="lastname"
+                    name="lastname"
+                    placeholder="{{sobrenome}}"
+                    readonly
+                  />
+                </label>
+              </div>
+            </div>
+            <div class="right-side">
+              <!--FOTO-->
+              <div class="input-box">
+                <label for="photo"
+                  >Foto de Perfil:
+                  <div class="photo-perfil">
+                    <img
+                      alt=""
+                      class="photo-circle"
+                      id="profile-photo"
+                      src="{{photo or 'https://via.placeholder.com/150'}}"
+                    />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      class="file-input"
+                      id="file-input"
+                      name="photo"
+                    />
+                    <!--BOTAO FOTO-->
+                    <label
+                      for="file-input"
+                      class="costum-file-input"
+                      id="upload-button"
+                      style="display: none"
+                      >Alterar Imagem</label
+                    >
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="button-cfg">
+            <button id="edit-button">Editar</button>
+            <button id="save-button" style="display: none">Salvar</button>
+            <button id="cancel-button" style="display: none">Cancelar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+  <script src="static/js/script.js"></script>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Beauty Time - Dashboard Cliente</title>
+    <link rel="stylesheet" href="static/css/style.css" />
+  </head>
+  <body>
+    <!--MENU TOPO-->
+    <div class="menu-superior">
+      <ul>
+        <li>
+          <a href="/dashboardCliente"
+            ><img
+              src="static/images/logo.svg"
+              alt="logo do BeautyTime"
+              width="335"
+              height="180"
+          /></a>
+        </li>
+        <li><a href="/agenda">Agenda</a></li>
+        <li><a href="#">Notificações</a></li>
+        <li><a href="/perfilCliente">Perfil</a></li>
+        <li><a href="/logout">Sair</a></li>
+      </ul>
+    </div>
+    <div class="dashboard-container">
+      <h3>Serviços:</h3>
+      <div class="container-servicos">
+        <ul>
+          {% for service in services %}
+          <li>
+            <h4>{{ service[0] }} - R$ {{ service[1] }}</h4>
+            <p>Tempo: {{ service[2] }} min</p>
+            <p>Profissional: {{ service[4] }} {{ service[5] }}</p>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <h3>Profissionais:</h3>
+      <div class="container-profissionais">
+        <ul>
+          {% for professional in pro %}
+          <li>
+            <img
+              alt=""
+              class="photo-circle"
+              id="profile-photo"
+              src="{{photo or 'https://via.placeholder.com/150'}}"
+            />
+            <p>{{ professional[1] }} {{ professional[2] }}</p>
+            <p>"Especialidade"</p>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

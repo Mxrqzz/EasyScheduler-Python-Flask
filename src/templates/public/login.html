@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt_br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Beauty Time - Login</title>
+    <link rel="stylesheet" href="static/css/style.css" />
+  </head>
+  <body>
+    <!--MENU TOPO-->
+
+    <div class="menu-superior">
+      <ul>
+        <li>
+          <a href="/"
+            ><img
+              src="static/images/logo.svg"
+              alt="logo do BeautyTime"
+              width="335"
+              height="180"
+          /></a>
+        </li>
+        <li><a href="/register">Não tem uma conta? Registre-se</a></li>
+      </ul>
+    </div>
+
+    <!--Container-->
+
+    <div class="container_group">
+      <!--Registre-se-->
+
+      <div class="title">
+        <h1>Login</h1>
+        <p>Não tem uma conta? <a href="/register">Registre-se</a></p>
+      </div>
+      <!--Formulario-->
+
+      <div class="form">
+        <form id="form" class="formulario" action="/login" method="post">
+          <div class="input-group">
+            <!--Email-->
+            <div class="input-box">
+              <label for="email">E-mail:</label>
+              <input
+                id="email"
+                type="email"
+                name="email"
+                maxlength="70"
+                required
+              />
+              <div class="error-general-msg" style="display: none">
+                Preencha um e-mail válido.
+              </div>
+            </div>
+
+            <!--Senha-->
+            <div class="input-box">
+              <label for="password">Senha</label>
+              <input
+                id="password"
+                type="password"
+                name="password"
+                maxlength="25"
+                required
+              />
+              <div class="error-msg" style="display: none">
+                Preencha uma senha.
+              </div>
+            </div>
+
+            <!--Botão-->
+            <div>
+              <button class="button" type="submit">Continuar</button>
+              
+            </div>
+          </div>
+          {% if error %}
+          <div class="error-msg">{{ error }}</div>
+          {% endif %}
+        </form>
+      </div>
+    </div>
+
+    <script></script>
+  </body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Beauty Time - Cadastro</title>
+    <link rel="stylesheet" href="static/css/style.css" />
+  </head>
+  <body>
+    <!--Menu Superior-->
+    <div class="menu-superior">
+      <ul>
+        <li>
+          <a href="/"
+            ><img
+              src="static/images/logo.svg"
+              alt="logo do BeautyTime"
+              width="335"
+              height="180"
+          /></a>
+        </li>
+        <li><a href="/login">Já tem uma conta? Faça login</a></li>
+      </ul>
+    </div>
+
+    <!--Tipo de Conta-->
+    <div class="containerTypeAccount">
+      <h1>Criar uma conta</h1>
+      <p>Seja bem vindo ao Beauty Time! Diga-nos o que você esta procurando.</p>
+      <!--Mensagem de erro-->
+
+      <span class="error-msg" style="display: none">
+        Por favor, selecione uma das opções abaixo.
+      </span>
+
+      <!--Cliente-->
+      <div class="radio-container">
+        <input
+          type="radio"
+          name="typeAccount"
+          id="typeClient"
+          value="cliente"
+        />
+        <label for="typeClient"> Eu quero Agendar</label>
+        <p>Agende hórarios em diversos salões próximos a você</p>
+      </div>
+      <!--Profissional-->
+      <div class="radio-container">
+        <input
+          type="radio"
+          name="typeAccount"
+          id="typePro"
+          value="profissional"
+        />
+        <label for="tipoCadastroProfissional">Sou Profissional de Beleza</label>
+        <p>Ofereça seus serviços e gerencie seus horários</p>
+      </div>
+      <!--Botão-->
+      <div class="button-register">
+        <a class="btn-redirect" href="#" onclick="return verificarRadio()"
+          >Continuar</a
+        >
+      </div>
+    </div>
+
+    <script src="static/js/script.js"></script>
+  </body>
+</html>
