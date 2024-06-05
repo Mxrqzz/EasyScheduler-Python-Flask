@@ -287,6 +287,7 @@ class Logout(MethodView):
         return redirect('/login')
 
 
+#SEM CONTROLE DE SESSAO
 class DashboardClient(MethodView):
     """
     Classe para manipular requisições relacionadas a pagina inicial do cliente
@@ -325,6 +326,7 @@ class DashboardClient(MethodView):
             abort(500, description=str(e))
 
 
+#SEM CONTROLE DE SESSAO
 class DashboardPro(MethodView):
     """
     Classe para manipular requisições relacionadas a pagina inicial do profissional
@@ -381,6 +383,7 @@ class PerfilCliente(MethodView):
             return redirect('/login')
 
 
+#SEM CONTROLE DE SESSAO
 class UpdateUserC(MethodView):
     '''Classe responsável por atualizar dados do usuario'''
 
@@ -478,6 +481,7 @@ class PerfilPro(MethodView):
             return redirect('/login')
 
 
+#SEM CONTROLE DE SESSAO
 class UpdateUserP(MethodView):
     '''
     Classe responsável por atualizar dados do usuario
@@ -537,6 +541,7 @@ class UpdateUserP(MethodView):
             abort(500, description=str(file_error))
         finally:
             cursor.close()
+
 
 
 class Services(MethodView):
@@ -616,6 +621,7 @@ class Services(MethodView):
             return jsonify({"error": f"Erro inesperado: {str(e)}"})
 
 
+#SEM CONTROLE DE SESSAO
 class Disponibilidade(MethodView):
     """
     Classe para manipular requisições relacionadas à disponibilidade dos profissionais.
