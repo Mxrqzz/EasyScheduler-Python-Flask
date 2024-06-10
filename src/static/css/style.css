@@ -468,6 +468,11 @@ input[type="file"] {
   display: grid;
 }
 
+.dashboard-container h3 {
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
 .container-profissionais {
   display: flex;
 }
@@ -516,4 +521,42 @@ select {
   padding: 13px;
   border-radius: 20px;
   padding: 30px 20px;
+}
+
+/* HORARIOS  */
+.day{
+  margin-top: 7px;
+  margin-bottom: 7px;
+}
+.day-box{
+  min-height: 30px;
+  display: flex;
+  gap: 30px;
+  
+  align-items: center;
+}
+
+.day-box label{
+  font-weight: 700;
+  font-size: 17px;
+  margin-left: auto;
+}
+
+.hours-group{
+  display: flex;
+  
+  align-items: center;
+  gap: 30px;
+}
+
+.horas{
+  display: grid;
+}
+
+.hours-box{
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  gap: 30px;
+  
 }

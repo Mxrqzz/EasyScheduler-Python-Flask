@@ -2,7 +2,7 @@
 
 from src.controllers.views import (
     Index, Register, FormClient, FormPro, Login, Logout, DashboardClient, DashboardPro,
-    PerfilCliente, PerfilPro, UpdateUserC, UpdateUserP, Services, Disponibilidade
+    PerfilCliente, PerfilPro, UpdateUserC, UpdateUserP, Services, Horarios
 )
 
 index = Index.as_view('index')
@@ -18,7 +18,7 @@ perfilPro = PerfilPro.as_view('perfilPro')
 updateUserC = UpdateUserC.as_view('updateUserC')
 updateUserP = UpdateUserP.as_view('updateUserP')
 services = Services.as_view('services')
-disponibilidade = Disponibilidade.as_view('disponibilidade')
+horarios = Horarios.as_view('horarios')
 
 
 routes = {
@@ -61,7 +61,7 @@ routes = {
     "services_route": "/services",
     "services": services,
 
-    "disponibilidade_route": "/disponibilidade",
-    "disponibilidade": disponibilidade,
+    "horarios_route": "/horarios",
+    "horarios": horarios
 
 }

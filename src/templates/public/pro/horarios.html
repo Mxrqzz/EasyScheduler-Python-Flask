@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="static/css/style.css" />
+    <title>BeautyTime - Horários</title>
+  </head>
+  <body>
+    <!--MENU TOPO-->
+    <div class="menu-superior">
+      <ul>
+        <li>
+          <a href="/dashboardPro"
+            ><img
+              src="static/images/logo.svg"
+              alt="logo do BeautyTime"
+              width="335"
+              height="180"
+          /></a>
+        </li>
+        <li><a href="/services">Serviços</a></li>
+        <li><a href="#">Notificações</a></li>
+        <li><a href="/perfilPro">Perfil</a></li>
+        <li><a href="/logout">Sair</a></li>
+      </ul>
+    </div>
+
+    <!--Container-->
+    <div class="container-horarios">
+      <!--titulo-->
+      <div class="title">
+        <h1>Horários</h1>
+        <p>Defina os seus horários de atendimento.</p>
+      </div>
+
+      <div class="form">
+        <form id="formHrs" class="formulario" action="/horarios" method="post">
+          <!--Domingo-->
+          <div class="day">
+            <div class="day-box">
+              <input
+                type="checkbox"
+                id="domingo"
+                onclick="showHours('domingo')"
+              />
+              <h3>Domingo</h3>
+              <label id="status-domingo" for="domingo">Fechado</label>
+            </div>
+
+            <div class="hours-group" id="domingo-hours" style="display: none">
+              <div class="horas">
+                <div class="hours-box">
+                  <h4>De</h4>
+                  <input type="time" id="domingo-start" />
+                  <h4>Até</h4>
+                  <input type="time" id="domingo-end" />
+                  <button
+                    class="button"
+                    type="button"
+                    onclick="addTime('domingo')"
+                  >
+                    Adicionar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--Segunda-->
+          <div class="day">
+            <div class="day-box">
+              <input
+                type="checkbox"
+                id="segunda"
+                onclick="showHours('segunda')"
+              />
+              <h3>Segunda-feira</h3>
+              <label id="status-segunda" for="segunda">Fechado</label>
+            </div>
+
+            <div class="hours-group" id="segunda-hours" style="display: none">
+              <div class="horas">
+                <div class="hours-box">
+                  <h4>De</h4>
+                  <input type="time" id="segunda-start" />
+                  <h4>Até</h4>
+                  <input type="time" id="segunda-end" />
+                  <button
+                    class="button"
+                    type="button"
+                    onclick="addTime('segunda')"
+                  >
+                    Adicionar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--Terça-->
+          <div class="day">
+            <div class="day-box">
+              <input type="checkbox" id="terca" onclick="showHours('terca')" />
+              <h3>Terça-feira</h3>
+              <label id="status-terca" for="terca">Fechado</label>
+            </div>
+
+            <div class="hours-group" id="terca-hours" style="display: none">
+              <div class="horas">
+                <div class="hours-box">
+                  <h4>De</h4>
+                  <input type="time" id="terca-start" />
+                  <h4>Até</h4>
+                  <input type="time" id="terca-end" />
+                  <button
+                    class="button"
+                    type="button"
+                    onclick="addTime('terca')"
+                  >
+                    Adicionar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--Quarta-->
+          <div class="day">
+            <div class="day-box">
+              <input
+                type="checkbox"
+                id="quarta"
+                onclick="showHours('quarta')"
+              />
+              <h3>Quarta-feira</h3>
+              <label id="status-quarta" for="quarta">Fechado</label>
+            </div>
+
+            <div class="hours-group" id="quarta-hours" style="display: none">
+              <div class="horas">
+                <div class="hours-box">
+                  <h4>De</h4>
+                  <input type="time" id="quarta-start" />
+                  <h4>Até</h4>
+                  <input type="time" id="quarta-end" />
+                  <button
+                    class="button"
+                    type="button"
+                    onclick="addTime('quarta')"
+                  >
+                    Adicionar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--Quinta-->
+          <div class="day">
+            <div class="day-box">
+              <input
+                type="checkbox"
+                id="quinta"
+                onclick="showHours('quinta')"
+              />
+              <h3>Quinta-feira</h3>
+              <label id="status-quinta" for="quinta">Fechado</label>
+            </div>
+
+            <div class="hours-group" id="quinta-hours" style="display: none">
+              <div class="horas">
+                <div class="hours-box">
+                  <h4>De</h4>
+                  <input type="time" id="quinta-start" />
+                  <h4>Até</h4>
+                  <input type="time" id="quinta-end" />
+                  <button
+                    class="button"
+                    type="button"
+                    onclick="addTime('quinta')"
+                  >
+                    Adicionar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--Sexta-->
+          <div class="day">
+            <div class="day-box">
+              <input type="checkbox" id="sexta" onclick="showHours('sexta')" />
+              <h3>Sexta-feira</h3>
+              <label id="status-sexta" for="sexta">Fechado</label>
+            </div>
+
+            <div class="hours-group" id="sexta-hours" style="display: none">
+              <div class="horas">
+                <div class="hours-box">
+                  <h4>De</h4>
+                  <input type="time" id="sexta-start" />
+                  <h4>Até</h4>
+                  <input type="time" id="sexta-end" />
+                  <button
+                    class="button"
+                    type="button"
+                    onclick="addTime('sexta')"
+                  >
+                    Adicionar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--Sábado-->
+          <div class="day">
+            <div class="day-box">
+              <input
+                type="checkbox"
+                id="sabado"
+                onclick="showHours('sabado')"
+              />
+              <h3>Sábado</h3>
+              <label id="status-sabado" for="sabado">Fechado</label>
+            </div>
+
+            <div class="hours-group" id="sabado-hours" style="display: none">
+              <div class="horas">
+                <div class="hours-box">
+                  <h4>De</h4>
+                  <input type="time" id="sabado-start" />
+                  <h4>Até</h4>
+                  <input type="time" id="sabado-end" />
+                  <button
+                    class="button"
+                    type="button"
+                    onclick="addTime('sabado')"
+                  >
+                    Adicionar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="button">Salvar</button>
+          <button class="button">Cancelar</button>
+        </form>
+      </div>
+    </div>
+    <script src="static/js/hours.js"></script>
+  </body>
+</html>
