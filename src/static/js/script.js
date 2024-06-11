@@ -65,43 +65,42 @@ cancel.addEventListener("click", function (event) {
 
 //alterar email e senha do usuario
 
-  // Edit Login Email
-  var editLogin = document.getElementById("login-edit-button");
-  var saveLogin = document.getElementById("login-save-button");
-  var cancelLogin = document.getElementById("login-cancel-button");
-  var emailInput = document.getElementById("new_email");
-  var formEmail = document.getElementById("login-edit-form");
+// Edit Login Email
+var editLogin = document.getElementById("login-edit-button");
+var saveLogin = document.getElementById("login-save-button");
+var cancelLogin = document.getElementById("login-cancel-button");
+var emailInput = document.getElementById("new_email");
+var formEmail = document.getElementById("login-edit-form");
 
-  editLogin.addEventListener("click", function (event) {
-    event.preventDefault();
-    editLogin.style.display = "none";
-    saveLogin.style.display = "inline";
-    cancelLogin.style.display = "inline";
-    emailInput.removeAttribute("readonly");
-  });
+editLogin.addEventListener("click", function (event) {
+  event.preventDefault();
+  editLogin.style.display = "none";
+  saveLogin.style.display = "inline";
+  cancelLogin.style.display = "inline";
+  emailInput.removeAttribute("readonly");
+});
 
-  saveLogin.addEventListener("click", function () {
-    formEmail.submit();
-  });
+saveLogin.addEventListener("click", function () {
+  formEmail.submit();
+});
 
-  cancelLogin.addEventListener("click", function (event) {
-    event.preventDefault();
-    saveLogin.style.display = "none";
-    cancelLogin.style.display = "none";
-    editLogin.style.display = "inline";
-    emailInput.setAttribute("readonly", true);
-  });
+cancelLogin.addEventListener("click", function (event) {
+  event.preventDefault();
+  saveLogin.style.display = "none";
+  cancelLogin.style.display = "none";
+  editLogin.style.display = "inline";
+  emailInput.setAttribute("readonly", true);
+});
 
-  function showHours(day) {
-    var checkbox = document.getElementById(day);
-    var hoursBox = document.getElementById(day + "-hours");
-    var status = document.getElementById("status-" + day);
-    if (checkbox.checked) {
-      hoursBox.style.display = "flex";
-      status.style.display = "none";
-    } else {
-      hoursBox.style.display = "none";
-      status.style.display = "block";
-    }
+function showHours(day) {
+  var checkbox = document.getElementById(day);
+  var hoursBox = document.getElementById(day + "-hours");
+  var status = document.getElementById("status-" + day);
+  if (checkbox.checked) {
+    hoursBox.style.display = "flex";
+    status.style.display = "none";
+  } else {
+    hoursBox.style.display = "none";
+    status.style.display = "block";
   }
-  
+}

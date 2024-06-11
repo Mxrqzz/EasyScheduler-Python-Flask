@@ -562,15 +562,15 @@ class Services(MethodView):
                 pro_data = cursor.fetchone()
 
                 cursor.execute(
-                    "SELECT titulo, preco, tempo,descricao FROM servico WHERE profissional_id = %s",
-                    (pro_id)
+                    "SELECT titulo, preco, tempo, descricao FROM servico WHERE profissional_id = %s",
+                    (pro_id,)
                 )
+
                 services = cursor.fetchall()
 
             if pro_data:
                 nome = pro_data[0]
                 sobrenome = pro_data[1]
-
                 return render_template(
                     'public/pro/service.html', id=pro_id, nome=nome, sobrenome=sobrenome,
                     services=services
@@ -581,33 +581,34 @@ class Services(MethodView):
             return redirect('/login')
 
     def post(self):
-        """
-        Função que manipula as requisições POST para o formulário de serviços.
-
-        Retorna:
-        redirect: Redireciona para a página de serviços após a inserção
-        ou exibe uma mensagem de erro.
-        """
-        # Obtém dados do formulário
+        '''
+        aaa
+        '''
         titulo = request.form.get('service')
         preco = request.form.get('price')
         tempo = request.form.get('time')
         descricao = request.form.get('description')
         profissional_id = request.form.get('profissional_id')
 
-        # Verifica se todos os campos necessários foram preenchidos
         if not all([titulo, preco, tempo, descricao, profissional_id]):
-            return jsonify({"error": "Todos os campos são obrigatórios."})
+            return jsonify({"error": "Todos os campos são obrigatórios"})
 
+        cursor = None
         try:
-            with bancoBT.cursor() as cursor:
-                # Insere o novo serviço no banco de dados
-                cursor.execute(
-                    "INSERT INTO servico (titulo, preco, tempo, descricao, profissional_id) "
-                    "VALUES (%s, %s, %s, %s, %s)",
-                    (titulo, preco, tempo, descricao, profissional_id)
-                )
-                bancoBT.commit()
+            cursor = bancoBT.cursor()
+            cursor.execute(
+                "SELECT COUNT(*) FROM servico WHERE titulo =%s AND profissional_id = %s",
+                (titulo, profissional_id)
+            )
+            if cursor.fetchone()[0] > 0:
+                return jsonify({"error": "Serviço já cadastrado."})
+
+            cursor.execute(
+                "INSERT INTO servico (titulo, preco, tempo, descricao, profissional_id) "
+                "VALUES (%s, %s, %s, %s, %s)",
+                (titulo, preco, tempo, descricao, profissional_id)
+            )
+            bancoBT.commit()
             return redirect('/services')
         except IntegrityError as e:
             bancoBT.rollback()
@@ -618,6 +619,9 @@ class Services(MethodView):
         except Exception as e:
             bancoBT.rollback()
             return jsonify({"error": f"Erro inesperado: {str(e)}"})
+        finally:
+            if cursor:
+                cursor.close()
 
 
 class Horarios(MethodView):
@@ -630,10 +634,60 @@ class Horarios(MethodView):
         Retorna:
         render_template: Uma renderização do template 'public/pro/horarios.html'
         """
-        return render_template('public/pro/horarios.html')
-    
+        pro_id = session.get('profissional_id')
+
+        return render_template('public/pro/horarios.html', id=pro_id)
+
     def post(self):
         '''
-        pega os dados dos horarios
+        Pega os dados dos horarios e adiciona ao banco de dados.
         '''
-        
+        dia_semana = [
+            ('domingo', 'Domingo'),
+            ('segunda', 'Segunda'),
+            ('terca', 'Terça'),
+            ('quarta', 'Quarta'),
+            ('quinta', 'Quinta'),
+            ('sexta', 'Sexta'),
+            ('sabado', 'Sábado')
+        ]
+
+        cursor = bancoBT.cursor()
+
+        profissional_id = request.form.get('profissional_id')
+
+        horas_form = {}
+        for dia_form, dia_sql in dia_semana:
+            fechado = dia_form not in request.form
+            hora_inicio = request.form.get(
+                f'{dia_form}-start', '00:00:00') if not fechado else '00:00:00'
+            hora_fim = request.form.get(
+                f'{dia_form}-end', '00:00:00') if not fechado else '00:00:00'
+
+            horas_form[dia_form] = {
+                'fechado': fechado,
+                'hora_inicio': hora_inicio,
+                'hora_fim': hora_fim
+            }
+
+            cursor.execute("""
+                SELECT * FROM horarios WHERE profissional_id = %s AND dia_semana = %s
+            """, (profissional_id, dia_sql))
+            horario_existente = cursor.fetchone()
+
+            if horario_existente:
+                cursor.execute("""
+                    UPDATE horarios
+                    SET fechado = %s, hora_inicio = %s, hora_fim = %s
+                    WHERE profissional_id = %s AND dia_semana = %s
+                """, (fechado, hora_inicio, hora_fim, profissional_id, dia_sql))
+            else:
+                cursor.execute("""
+                    INSERT INTO horarios (profissional_id, dia_semana, fechado, hora_inicio, hora_fim)
+                    VALUES (%s, %s, %s, %s, %s)
+                """, (profissional_id, dia_sql, fechado, hora_inicio, hora_fim))
+
+        bancoBT.commit()
+        cursor.close()
+
+        return render_template('public/pro/horarios.html', id=profissional_id, horarios=horas_form)
