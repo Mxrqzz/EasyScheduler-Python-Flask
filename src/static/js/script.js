@@ -91,3 +91,17 @@ cancel.addEventListener("click", function (event) {
     editLogin.style.display = "inline";
     emailInput.setAttribute("readonly", true);
   });
+
+  function showHours(day) {
+    var checkbox = document.getElementById(day);
+    var hoursBox = document.getElementById(day + "-hours");
+    var status = document.getElementById("status-" + day);
+    if (checkbox.checked) {
+      hoursBox.style.display = "flex";
+      status.style.display = "none";
+    } else {
+      hoursBox.style.display = "none";
+      status.style.display = "block";
+    }
+  }
+  

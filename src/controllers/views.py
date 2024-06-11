@@ -631,3 +631,9 @@ class Horarios(MethodView):
         render_template: Uma renderização do template 'public/pro/horarios.html'
         """
         return render_template('public/pro/horarios.html')
+    
+    def post(self):
+        '''
+        pega os dados dos horarios
+        '''
+        
