@@ -6,47 +6,30 @@ from flask.views import MethodView
 from pymysql import MySQLError, IntegrityError
 from werkzeug.utils import secure_filename
 
+
 from src.database import bancoBT
 
 
 class Index(MethodView):
     """
-    Classe para manipular requisições relacionadas a pagina inicial
-    Essa classe herda de MethodView, permintindo que ela seja usada com uma view
-    em um aplicativo Flask
-
-    Métodos:
-    - get() Método para lidar com requisições GET para a pagina inicial
-
+    Classe responsavel pelas requisições da pagina inicial
     """
 
     def get(self):
         """
-        Manipula requisições GET para a pagina inicial.
-
-        Retorna:
-        render_template: Uma renderização do template 'public/index.html'
+        renderiza o arquivo index.html
         """
         return render_template('public/index.html')
 
 
 class Register(MethodView):
     """
-     Classe para manipular requisições relacionadas a pagina de escolha do tipo de conta
-     Essa classe herda de MethodView, permintindo que ela seja usada com uma view
-     em um aplicativo Flask
-
-     Métodos:
-     - get() Método para lidar com requisições GET para a pagina de escolha do tipo de conta
-
-     """
+    Classe responsavel pelas requisições da pagina do tipo de conta do usuario
+    """
 
     def get(self):
         """
-        Manipula requisições GET para a pagina de escolha do tipo de conta que deseja criar.
-
-        Retorna:
-        render_template: Uma renderização do template 'public/index.html'
+        renderiza o arquivo register.html
         """
         return render_template('public/register.html')
 
@@ -54,29 +37,19 @@ class Register(MethodView):
 class FormClient(MethodView):
     """
     Classe para manipular requisições relacionadas a pagina de formulario cliente
-    Essa classe herda de MethodView, permintindo que ela seja usada com uma view
-    em um aplicativo Flask
 
-    Métodos:
-    - get() Método para lidar com requisições GET para a pagina de formulario do cliente
-    - post() Método para lidar com requisições POST do formulário de cliente
+
     """
 
     def get(self):
         """
-        Manipula requisições GET para a pagina de formulario do cliente.
-
-        Retorna:
-        render_template: Uma renderização do template 'public/cliente/registerCliente.html'
+        Renderiza o arquivo cliente/form.html
         """
         return render_template('public/cliente/form.html')
 
     def post(self):
         """
-        Manipula requisições POST para o formulário de cliente.
-
-        Retorna:
-        redirect: Redireciona para a página inicial após o registro ou exibe uma mensagem de erro.
+        adiciona dados no banco de dados
         """
         # Obtém dados do formulário
         name = request.form.get('name')
@@ -307,7 +280,8 @@ class DashboardClient(MethodView):
             with bancoBT.cursor() as cursor:
                 # Buscar todos os serviços
                 cursor.execute(
-                    "SELECT s.titulo, s.preco, s.tempo, s.descricao, p.nome, p.sobrenome "
+                    "SELECT s.id, s.titulo, s.preco, s.tempo,"
+                    "s.descricao,p.id, p.nome, p.sobrenome "
                     "FROM servico s "
                     "JOIN profissional p ON s.profissional_id = p.id"
                 )
@@ -562,7 +536,8 @@ class Services(MethodView):
                 pro_data = cursor.fetchone()
 
                 cursor.execute(
-                    "SELECT titulo, preco, tempo, descricao FROM servico WHERE profissional_id = %s",
+                    "SELECT titulo, preco, tempo, descricao "
+                    "FROM servico WHERE profissional_id = %s",
                     (pro_id,)
                 )
 
@@ -582,7 +557,7 @@ class Services(MethodView):
 
     def post(self):
         '''
-        aaa
+        Função que realiza o cadastro de serviços do profissional
         '''
         titulo = request.form.get('service')
         preco = request.form.get('price')
@@ -591,17 +566,17 @@ class Services(MethodView):
         profissional_id = request.form.get('profissional_id')
 
         if not all([titulo, preco, tempo, descricao, profissional_id]):
-            return jsonify({"error": "Todos os campos são obrigatórios"})
+            return jsonify({"error": "Todos os campos são obrigatórios"}), 400
 
         cursor = None
         try:
             cursor = bancoBT.cursor()
             cursor.execute(
-                "SELECT COUNT(*) FROM servico WHERE titulo =%s AND profissional_id = %s",
+                "SELECT COUNT(*) FROM servico WHERE titulo = %s AND profissional_id = %s",
                 (titulo, profissional_id)
             )
             if cursor.fetchone()[0] > 0:
-                return jsonify({"error": "Serviço já cadastrado."})
+                return jsonify({"error": "Serviço já cadastrado."}), 409
 
             cursor.execute(
                 "INSERT INTO servico (titulo, preco, tempo, descricao, profissional_id) "
@@ -612,16 +587,18 @@ class Services(MethodView):
             return redirect('/services')
         except IntegrityError as e:
             bancoBT.rollback()
-            return jsonify({"error": f"Erro de integridade: {str(e)}"})
+            return jsonify({"error": f"Erro de integridade: {str(e)}"}), 500
         except MySQLError as e:
             bancoBT.rollback()
-            return jsonify({"error": f"Falha ao cadastrar serviço, erro do MySQL: {str(e)}"})
+            return jsonify({"error": f"Falha ao cadastrar serviço, erro do MySQL: {str(e)}"}), 500
         except Exception as e:
             bancoBT.rollback()
-            return jsonify({"error": f"Erro inesperado: {str(e)}"})
+            return jsonify({"error": f"Erro inesperado: {str(e)}"}), 500
         finally:
             if cursor:
                 cursor.close()
+
+# SEM CONTROLE DE SESSAO
 
 
 class Horarios(MethodView):
@@ -636,7 +613,39 @@ class Horarios(MethodView):
         """
         pro_id = session.get('profissional_id')
 
-        return render_template('public/pro/horarios.html', id=pro_id)
+        if not pro_id:
+            return redirect('/login')
+
+        dia_semana = [
+            ('domingo', 'Domingo'),
+            ('segunda', 'Segunda'),
+            ('terca', 'Terça'),
+            ('quarta', 'Quarta'),
+            ('quinta', 'Quinta'),
+            ('sexta', 'Sexta'),
+            ('sabado', 'Sábado')
+        ]
+
+        horas_form = {}
+        with bancoBT.cursor() as cursor:
+            for dia_form, dia_sql in dia_semana:
+                cursor.execute("""
+                    SELECT fechado, hora_inicio, hora_fim FROM horarios
+                    WHERE profissional_id = %s AND dia_semana = %s
+                """, (pro_id, dia_sql))
+                resultado = cursor.fetchone()
+
+                if resultado:
+                    fechado, hora_inicio, hora_fim = resultado
+                else:
+                    fechado, hora_inicio, hora_fim = True, '00:00:00', '00:00:00'
+
+                horas_form[dia_form] = {
+                    'fechado': fechado,
+                    'hora_inicio': hora_inicio,
+                    'hora_fim': hora_fim
+                }
+        return render_template('public/pro/horarios.html', id=pro_id, horarios=horas_form)
 
     def post(self):
         '''
@@ -691,3 +700,60 @@ class Horarios(MethodView):
         cursor.close()
 
         return render_template('public/pro/horarios.html', id=profissional_id, horarios=horas_form)
+
+
+class Agendamento(MethodView):
+    '''
+    Classe responsável pela tela de agendamento
+    '''
+
+    def get(self):
+        '''
+        Renderiza o arquivo do agendamento
+        '''
+        prof_id = request.args.get('profissional_id')
+
+        if not prof_id:
+            abort(400, description="Missing professional ID")
+
+        cursor = bancoBT.cursor()
+
+        cursor.execute(
+            "SELECT nome, sobrenome FROM profissional WHERE id = %s", (
+                prof_id,)
+        )
+
+        dados_pro = cursor.fetchone()
+
+        cursor.execute(
+            "SELECT dia_semana, fechado, hora_inicio, hora_fim FROM horarios"
+            " WHERE profissional_id = %s", (prof_id,)
+        )
+
+        horarios_result = cursor.fetchall()
+
+        dias_semana = ['Domingo', 'Segunda', 'Terça',
+                       'Quarta', 'Quinta', 'Sexta', 'Sábado']
+        horarios_pro = {dia: {'fechado': True, 'hora_inicio': None,
+                              'hora_fim': None} for dia in dias_semana}
+
+        for horario in horarios_result:
+            dias_semana, fechado, hora_inicio, hora_fim = horario
+            horarios_pro[dias_semana] = {
+                'fechado': fechado,
+                'hora_inicio': hora_inicio,
+                'hora_fim': hora_fim
+            }
+
+        cursor.execute(
+            "SELECT id, titulo, preco, tempo, descricao "
+            "FROM servico WHERE profissional_id = %s", (prof_id,)
+        )
+        services = cursor.fetchall()
+
+        return render_template(
+            'public/cliente/agendamento.html',
+            dados_pro=dados_pro,
+            horarios_pro=horarios_pro,
+            services=services
+        )

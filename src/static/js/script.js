@@ -92,6 +92,8 @@ cancelLogin.addEventListener("click", function (event) {
   emailInput.setAttribute("readonly", true);
 });
 
+//tela horarios
+
 function showHours(day) {
   var checkbox = document.getElementById(day);
   var hoursBox = document.getElementById(day + "-hours");
@@ -104,3 +106,22 @@ function showHours(day) {
     status.style.display = "block";
   }
 }
+
+function redirectToAgenda(profissionalId) {
+  window.location.href = `/agendamento?profissional_id=${profissionalId}`;
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  document.getElementById("service-select").addEventListener("change", function () {
+    var selectedOption = this.options[this.selectedIndex];
+    var preco = selectedOption.getAttribute("data-preco");
+    var tempo = selectedOption.getAttribute("data-tempo");
+
+    document.getElementById("price-service").innerText = preco
+      ? "R$ " + preco
+      : "Selecione um serviço";
+    document.getElementById("time-service").innerText = tempo
+      ? tempo + " minutos"
+      : "Selecione um serviço";
+  });
+});

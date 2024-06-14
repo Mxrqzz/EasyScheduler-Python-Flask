@@ -20,7 +20,7 @@
           /></a>
         </li>
         <li><a href="/agenda">Agenda</a></li>
-        <li><a href="#">Notificações</a></li>
+        <li><a href="/agendamento">Notificações</a></li>
         <li><a href="/perfilCliente">Perfil</a></li>
         <li><a href="/logout">Sair</a></li>
       </ul>
@@ -30,10 +30,10 @@
       <div class="container-servicos">
         <ul>
           {% for service in services %}
-          <li>
-            <h4>{{ service[0] }} - R$ {{ service[1] }}</h4>
-            <p>Tempo: {{ service[2] }} min</p>
-            <p>Profissional: {{ service[4] }} {{ service[5] }}</p>
+          <li onclick="redirectToAgendaServico({{ service[5] }}')">
+            <h4>{{ service[1] }} - R$ {{ service[2] }},00</h4>
+            <p>Tempo: {{ service[3] }} min</p>
+            <p>Profissional: {{ service[6] }} {{ service[7] }}</p>
           </li>
           {% endfor %}
         </ul>
@@ -42,7 +42,7 @@
       <div class="container-profissionais">
         <ul>
           {% for professional in pro %}
-          <li>
+          <li onclick="redirectToAgenda({{ professional[0] }})">
             <img
               alt=""
               class="photo-circle"
@@ -57,4 +57,5 @@
       </div>
     </div>
   </body>
+  <script src="static/js/script.js"></script>
 </html>

@@ -29,7 +29,7 @@ function checkInputServico() {
     errorInput(servico, "Preencha um serviço");
     return false;
   } else {
-    clearError(sobrenome);
+    clearError(servico);
     return true;
   }
 }
@@ -74,7 +74,7 @@ function checkInputDescricao() {
 }
 
 function checkForm() {
-  const isServiçoValid = checkInputServiço();
+  const isServiçoValid = checkInputServico();
   const isPrecoValid = checkInputPreco();
   const isTempoValid = checkInputTempo();
   const isDescricaoValid = checkInputDescricao();
@@ -100,23 +100,26 @@ function clearError(input) {
 document.addEventListener("DOMContentLoaded", function () {
   const form = document.getElementById("service-form");
   form.addEventListener("submit", function (event) {
-    const formData = new FormData(form);
-
-    fetch("/services", {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (!data.error) {
-          fetchServices();
-        } else {
-          alert(data.error);
-        }
+    event.preventDefault();
+    if (checkForm()) {
+      const formData = new FormData(form);
+      fetch("/services", {
+        method: "POST",
+        body: formData,
       })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
+        .then((response) => response.json())
+        .then((data) => {
+          if (!data.error) {
+            fetchServices();
+            form.reset();
+          } else {
+            alert(data.error);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
   });
 
   function fetchServices() {

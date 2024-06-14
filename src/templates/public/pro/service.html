@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -108,7 +108,7 @@
             </div>
             <!--Botão-->
             <div class="btn-form">
-              <button class="button">Adicionar</button>
+              <button class="button" type="submit">Adicionar</button>
             </div>
           </form>
         </div>
@@ -118,9 +118,10 @@
             {% for service in services %}
             <li>
               <h4>{{ service [0] }}</h4>
+              <p>Descrição: {{ service [3] }}</p>
               <p>Preço: {{ service [1] }},00 R$</p>
               <p>Tempo: {{ service [2] }}</p>
-              <p>Descrição: {{ service [3] }}</p>
+              
             </li>
             {% endfor %}
           </ul>
