@@ -1,12 +1,9 @@
 '''Arquivo responsavel pelas classes e funções'''
 
-import os
 from datetime import datetime
-from flask import session, render_template, redirect, request, jsonify, abort, current_app as app
+from flask import session, render_template, redirect, request, jsonify, abort
 from flask.views import MethodView
 from pymysql import MySQLError, IntegrityError
-from werkzeug.utils import secure_filename
-
 
 from src.database import bancoBT
 
@@ -38,8 +35,6 @@ class Register(MethodView):
 class FormClient(MethodView):
     """
     Classe para manipular requisições relacionadas a pagina de formulario cliente
-
-
     """
 
     def get(self):
@@ -55,6 +50,75 @@ class FormClient(MethodView):
         # Obtém dados do formulário
         name = request.form.get('name')
         lastname = request.form.get('lastname')
+        phone = request.form.get('phone')
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        # Verifica se o email já está cadastrado como cliente
+        cursor = bancoBT.cursor()
+        try:
+            cursor.execute("SELECT * FROM cliente WHERE email = %s", (email,))
+            existing_client = cursor.fetchone()
+            if existing_client:
+                cursor.close()
+                return jsonify({"error": "Email ja cadastrado. Por favor utilize outro"})
+        except MySQLError:
+            bancoBT.rollback()
+            cursor.close()
+            abort(500)
+
+        # Verifica se o email já está cadastrado como profissional
+        cursor = bancoBT.cursor()
+        try:
+            cursor.execute(
+                "SELECT * FROM profissional WHERE email = %s", (email,))
+            existing_pro = cursor.fetchone()
+            if existing_pro:
+                cursor.close()
+                return jsonify({"error": "Email ja cadastrado. Por favor utilize outro"})
+        except MySQLError:
+            bancoBT.rollback()
+            cursor.close()
+            abort(500)
+
+        # Se o e-mail não estiver cadastrado, insere o novo registro
+        try:
+            cursor.execute("INSERT INTO cliente (nome, sobrenome,telefone, email, senha)"
+                           "VALUES (%s, %s, %s, %s, %s)",
+                           (name, lastname, phone, email, password))
+            bancoBT.commit()
+            cursor.close()
+            return redirect('/')
+        except IntegrityError:
+            bancoBT.rollback()
+            cursor.close()
+            return jsonify({"error": "Falha ao cadastrar cliente, verifique os dados fornecidos."})
+        except MySQLError:
+            bancoBT.rollback()
+            cursor.close()
+            abort(500)  # Erro interno do servidor
+
+
+class FormPro(MethodView):
+    """
+    Classe para manipular requisições relacionadas a pagina de formulario cliente
+    """
+
+    def get(self):
+        """
+        Renderiza o arquivo pro/form.html
+        """
+        return render_template('public/pro/form.html')
+
+    def post(self):
+        """
+        adiciona dados no banco de dados
+        """
+        # Obtém dados do formulário
+        name = request.form.get('name')
+        category = request.form.get('category')
+        phone = request.form.get('phone')
+        endereco = request.form.get('endereco')
         email = request.form.get('email')
         password = request.form.get('password')
 
@@ -87,87 +151,10 @@ class FormClient(MethodView):
 
         # Se o e-mail não estiver cadastrado em nenhuma das tabelas, inserir o novo registro
         try:
-            cursor.execute("INSERT INTO cliente (nome, sobrenome, email, senha)"
-                           "VALUES (%s, %s, %s, %s)",
-                           (name, lastname, email, password))
-            bancoBT.commit()
-            cursor.close()
-            return redirect('/')
-        except IntegrityError:
-            bancoBT.rollback()
-            cursor.close()
-            return jsonify({"error": "Falha ao cadastrar cliente, verifique os dados fornecidos."})
-        except MySQLError:
-            bancoBT.rollback()
-            cursor.close()
-            abort(500)  # Erro interno do servidor
-
-
-class FormPro(MethodView):
-    """
-    Classe para manipular requisições relacionadas a pagina de formulario profissional
-    Essa classe herda de MethodView, permintindo que ela seja usada com uma view
-    em um aplicativo Flask
-
-    Métodos:
-    - get() Método para lidar com requisições GET para a pagina de formulario do profissional
-    - post() Método para lidar com requisições POST do formulário de profissional
-    """
-
-    def get(self):
-        """
-        Manipula requisições GET para a pagina de formulario do profissional.
-
-        Retorna:
-        render_template: Uma renderização do template'public/profissional/registerprofissional.html'
-        """
-        return render_template('public/pro/form.html')
-
-    def post(self):
-        """
-        Manipula requisições POST para o formulário de profissional.
-
-        Retorna:
-        redirect: Redireciona para a página inicial após o registro ou exibe uma mensagem de erro.
-        """
-        # Obtém dados do formulário
-        name = request.form.get('name')
-        lastname = request.form.get('lastname')
-        email = request.form.get('email')
-        password = request.form.get('password')
-
-        # Verifica se o email já está cadastrado como profissional
-        cursor = bancoBT.cursor()
-        try:
-            cursor.execute("SELECT * FROM cliente WHERE email = %s", (email,))
-            existing_client = cursor.fetchone()
-            if existing_client:
-                cursor.close()
-                return jsonify({"error": "Email ja cadastrado. Por favor utilize outro"})
-        except MySQLError:
-            bancoBT.rollback()
-            cursor.close()
-            abort(500)
-
-        # Verifica se o email já está cadastrado como profissional
-        cursor = bancoBT.cursor()
-        try:
             cursor.execute(
-                "SELECT * FROM profissional WHERE email = %s", (email,))
-            existing_pro = cursor.fetchone()
-            if existing_pro:
-                cursor.close()
-                return jsonify({"error": "Email ja cadastrado. Por favor utilize outro"})
-        except MySQLError:
-            bancoBT.rollback()
-            cursor.close()
-            abort(500)
-
-        # Se o e-mail não estiver cadastrado em nenhuma das tabelas, inserir o novo registro
-        try:
-            cursor.execute("INSERT INTO profissional (nome, sobrenome, email, senha)"
-                           "VALUES (%s, %s, %s, %s)",
-                           (name, lastname, email, password))
+                "INSERT INTO profissional (nome, categoria, email, senha, telefone, endereco)"
+                "VALUES (%s, %s, %s, %s, %s, %s)",
+                (name, category, email, password, phone, endereco))
             bancoBT.commit()
             cursor.close()
             return redirect('/')
@@ -184,26 +171,17 @@ class FormPro(MethodView):
 class Login(MethodView):
     """
     Classe para manipular requisições relacionadas a pagina de login
-    Essa classe herda de MethodView, permintindo que ela seja usada com uma view
-    em um aplicativo Flask
-    Métodos:
-    - get() Método para lidar com requisições GET para a pagina de login
     """
 
     def get(self):
         """
-        Manipula requisições GET para a pagina de login
-        Retorna:
-        render_template: Uma renderização do template 'public/login.html'
+        Renderiza o arquivo public/login.html
         """
         return render_template('public/login.html')
 
     def post(self):
         """
-        Manipula requisições POST do formulário de login.
-        Retorna:
-        redirect: Redireciona para a página de dashboard se o login for bem-sucedido,
-        caso contrário, redireciona para a página de login com uma mensagem de erro.
+        Confere se os dados de login existe no banco de dados.
         """
         email = request.form.get('email')
         senha = request.form.get('password')
@@ -211,10 +189,9 @@ class Login(MethodView):
         # verificar se o email e a senha corresponde ao usuario no banco de dados
         cursor = bancoBT.cursor()
         cursor.execute(
-            "SELECT * FROM cliente WHERE email = %s AND senha = %s", (email, senha))
+            "SELECT id, nome, sobrenome, email FROM cliente "
+            "WHERE email = %s AND senha = %s", (email, senha))
         cliente_data = cursor.fetchone()
-
-        error = ""
 
         if cliente_data:
 
@@ -230,7 +207,8 @@ class Login(MethodView):
             return redirect('/dashboardClient')
 
         cursor.execute(
-            "SELECT * FROM profissional WHERE email = %s AND senha = %s", (email, senha))
+            "SELECT id, nome, categoria, email FROM profissional "
+            "WHERE  email = %s AND senha = %s", (email, senha))
         profissional_data = cursor.fetchone()
 
         if profissional_data:
@@ -238,7 +216,7 @@ class Login(MethodView):
             profissional = {
                 "id": profissional_data[0],
                 "nome": profissional_data[1],
-                "sobrenome": profissional_data[2],
+                "categoria": profissional_data[2],
                 "email": profissional_data[3],
             }
 
@@ -251,38 +229,43 @@ class Login(MethodView):
 
 
 class Logout(MethodView):
-    '''Classe responsável por fazer o logout da conta'''
+    '''
+    Classe responsável por fazer o logout da conta
+    '''
 
     def get(self):
-        '''função responsavel por limpar os dados da sessao e realizar o logout'''
+        '''
+        função responsavel por limpar os dados da sessao e realizar o logout
+        '''
         # limpa os dados da sessao
         session.clear()
         # redireciona para a tela de login
         return redirect('/login')
 
 
-# SEM CONTROLE DE SESSAO
 class DashboardClient(MethodView):
     """
-    Classe para manipular requisições relacionadas a pagina inicial do cliente
-    Essa classe herda de MethodView, permintindo que ela seja usada com uma view
-    em um aplicativo Flask
-    Métodos:
-    - get() Método para lidar com requisições GET para a pagina inicial do cliente
+    Classe para manipular requisições relacionadas ao Dashboard do cliente
     """
 
     def get(self):
         """
-        Manipula requisições GET para a pagina inicial do cliente.
-        Retorna:
-        render_template: Uma renderização do template 'public/cliente/dashboard.html'
+        Renderiza o arquivo 'public/cliente/dashboard.html' e puxa dados do Banco de dados
+        para ja renderizar a pagina com esses dados carregados
         """
+        # controle de sessão
+        cliente_id = session.get('cliente_id')
+
+        if not cliente_id:
+            session.clear()
+            return redirect('/login')
+
         try:
             with bancoBT.cursor() as cursor:
                 # Buscar todos os serviços
                 cursor.execute(
                     "SELECT s.id, s.titulo, s.preco, s.tempo,"
-                    "s.descricao,p.id, p.nome, p.sobrenome "
+                    "s.descricao,p.id,p.id, p.nome, p.categoria "
                     "FROM servico s "
                     "JOIN profissional p ON s.profissional_id = p.id"
                 )
@@ -290,7 +273,7 @@ class DashboardClient(MethodView):
 
                 # Buscar todos os profissionais
                 cursor.execute(
-                    "SELECT id, nome, sobrenome FROM profissional"
+                    "SELECT id, nome, categoria FROM profissional"
                 )
                 pro = cursor.fetchall()
 
@@ -301,46 +284,42 @@ class DashboardClient(MethodView):
             abort(500, description=str(e))
 
 
-# SEM CONTROLE DE SESSAO
 class DashboardPro(MethodView):
     """
-    Classe para manipular requisições relacionadas a pagina inicial do profissional
-    Essa classe herda de MethodView, permintindo que ela seja usada com uma view
-    em um aplicativo Flask
-    Métodos:
-    - get() Método para lidar com requisições GET para a pagina inicial do profissional
+    Classe para manipular requisições relacionadas ao Dashboard do Profissional
     """
 
     def get(self):
         """
-        Manipula requisições GET para a pagina inicial do profissional.
-        Retorna:
-        render_template: Uma renderização do template 'public/pro/dashboard.html'
+        Renderiza o arquivo 'public/pro/dashboard.html' e puxa dados do Banco de dados
+        para ja renderizar a pagina com esses dados carregados
         """
         profissional_id = session.get('profissional_id')
 
         if not profissional_id:
+            session.clear()
             return redirect('/login')
 
         query = """
-        SELECT 
+        SELECT
             a.data_agendamento,
             c.nome AS cliente_nome,
             c.sobrenome AS cliente_sobrenome,
+            c.telefone AS cliente_telefone,
             s.titulo AS servico_titulo,
             s.tempo AS duracao_servico,
             ADDTIME(a.data_agendamento, s.tempo) AS hora_fim
-        FROM 
+        FROM
             agendamento a
-        JOIN 
+        JOIN
             cliente c ON a.cliente_id = c.id
-        JOIN 
+        JOIN
             agendamento_servico ags ON a.id = ags.agendamento_id
-        JOIN 
+        JOIN
             servico s ON ags.servico_id = s.id
-        WHERE 
+        WHERE
             a.profissional_id = %s
-        ORDER BY 
+        ORDER BY
             a.data_agendamento;
         """
 
@@ -356,11 +335,7 @@ class DashboardPro(MethodView):
 
 class PerfilCliente(MethodView):
     """
-    Classe para manipular requisições relacionadas a pagina de perfil do cliente
-    Essa classe herda de MethodView, permintindo que ela seja usada com uma view
-    em um aplicativo Flask
-    Métodos:
-    - get() Método para lidar com requisições GET para a pagina de perfil do cliente
+    Classe para manipular requisições relacionadas ao Perfil do Cliente
     """
 
     def get(self):
@@ -373,73 +348,71 @@ class PerfilCliente(MethodView):
         if cliente_id:
             cursor = bancoBT.cursor()
             cursor.execute(
-                "SELECT nome, sobrenome, email, photo FROM cliente WHERE id = %s", (cliente_id,))
+                "SELECT nome, sobrenome, telefone, email, senha "
+                "FROM cliente WHERE id = %s", (cliente_id,))
             cliente_data = cursor.fetchone()
             cursor.close()
 
             if cliente_data:
                 nome = cliente_data[0]
                 sobrenome = cliente_data[1]
-                email = cliente_data[2]
-                photo = cliente_data[3] or 'https://via.placeholder.com/200'
+                telefone = cliente_data[2]
+                email = cliente_data[3]
+                senha = cliente_data[4]
 
                 return render_template('public/cliente/perfil.html',
                                        id=cliente_id, nome=nome, sobrenome=sobrenome,
-                                       email=email, photo=photo)
+                                       telefone=telefone, email=email, senha=senha)
             else:
                 return redirect('/login')
         else:
             return redirect('/login')
 
 
-# SEM CONTROLE DE SESSAO
 class UpdateUserC(MethodView):
     '''Classe responsável por atualizar dados do usuario'''
 
     def post(self):
-        '''Função que altera nome, sobrenome e foto do cliente'''
+        '''Função que altera nome, sobrenome, telefone e email do cliente'''
         cliente_id = session.get('cliente_id')
         if not cliente_id:
             return redirect('/login')
 
         nome = request.form.get('name')
         sobrenome = request.form.get('lastname')
-        photo = request.files.get('photo')
+        telefone = request.form.get('phone')
+        email = request.form.get('email')
 
         cursor = bancoBT.cursor()
 
         try:
-            if not nome or not sobrenome:
+            # Recupera dados existentes, se necessário
+            if not nome or not sobrenome or not telefone or not email:
                 cursor.execute(
-                    "SELECT nome, sobrenome FROM cliente WHERE id = %s", (cliente_id))
+                    "SELECT nome, sobrenome, telefone, email FROM cliente WHERE id = %s", 
+                    (cliente_id,)
+                )
                 cliente_data = cursor.fetchone()
                 if cliente_data:
                     if not nome:
                         nome = cliente_data[0]
                     if not sobrenome:
                         sobrenome = cliente_data[1]
+                    if not telefone:
+                        telefone = cliente_data[2]
+                    if not email:
+                        email = cliente_data[3]
 
-                # verifica se o arquivo foi enviado
-                if photo:
-                    filename = secure_filename(photo.filename)
-                    photo.save(os.path.join(
-                        app.config['UPLOAD_FOLDER'], filename))
-                    photo_path = os.path.join(
-                        app.config['UPLOAD_FOLDER'], filename)
-                else:
-                    photo_path = None
+            # Atualiza os dados do cliente
+            cursor.execute(
+                "UPDATE cliente SET nome = %s, sobrenome = %s, telefone = %s, email = %s "
+                "WHERE id = %s",
+                (nome, sobrenome, telefone, email, cliente_id)
+            )
 
-                cursor.execute(
-                    "UPDATE cliente SET nome = %s, sobrenome = %s, photo=%s WHERE id = %s",
-                    (nome, sobrenome, photo_path, cliente_id)
-                )
-            else:
-                cursor.execute(
-                    "UPDATE cliente SET nome = %s, sobrenome =%s, WHERE id = %s",
-                    (nome, sobrenome, cliente_id)
-                )
             bancoBT.commit()
             return redirect('/perfilCliente')
+
         except (MySQLError, IntegrityError) as db_error:
             bancoBT.rollback()
             abort(500, description=str(db_error))
@@ -452,11 +425,7 @@ class UpdateUserC(MethodView):
 
 class PerfilPro(MethodView):
     """
-    Classe para manipular requisições relacionadas a pagina de perfil do profissional
-    Essa classe herda de MethodView, permintindo que ela seja usada com uma view
-    em um aplicativo Flask
-    Métodos:
-    - get() Método para lidar com requisições GET para a pagina de perfil do profissional
+    Classe para manipular requisições relacionadas ao Perfil do Profissional
     """
 
     def get(self):
@@ -469,20 +438,20 @@ class PerfilPro(MethodView):
         if pro_id:
             cursor = bancoBT.cursor()
             cursor.execute(
-                "SELECT nome, sobrenome, email, photo FROM profissional WHERE id = %s",
+                "SELECT nome, categoria, telefone, email FROM profissional WHERE id = %s",
                 (pro_id,))
             pro_data = cursor.fetchone()
             cursor.close()
 
             if pro_data:
                 nome = pro_data[0]
-                sobrenome = pro_data[1]
-                email = pro_data[2]
-                photo = pro_data[3] or 'https://via.placeholder.com/200'
+                categoria = pro_data[1]
+                telefone = pro_data[2]
+                email = pro_data[3]
 
                 return render_template(
                     'public/pro/perfil.html', id=pro_id, nome=nome,
-                    sobrenome=sobrenome, email=email, photo=photo
+                    categoria=categoria, email=email, telefone=telefone
                 )
             else:
                 return redirect('/login')
@@ -490,58 +459,49 @@ class PerfilPro(MethodView):
             return redirect('/login')
 
 
-# SEM CONTROLE DE SESSAO
 class UpdateUserP(MethodView):
-    '''
-    Classe responsável por atualizar dados do usuario
-    '''
+    '''Classe responsável por atualizar dados do Profissional'''
 
     def post(self):
-        '''
-        Função que altera nome, sobrenome e foto do profissional
-        '''
-        pro_id = session.get('profissional_id')
-        if not pro_id:
+        '''Função que altera nome, sobrenome, telefone e email do profissional'''
+        profissional_id = session.get('profissional_id')
+        if not profissional_id:
             return redirect('/login')
 
         nome = request.form.get('name')
-        sobrenome = request.form.get('lastname')
-        photo = request.files.get('photo')
+        categoria = request.form.get('category')
+        telefone = request.form.get('phone')
+        email = request.form.get('email')
 
         cursor = bancoBT.cursor()
 
         try:
-            if not nome or not sobrenome:
+            # Recupera dados existentes, se necessário
+            if not nome or not categoria or not telefone or not email:
                 cursor.execute(
-                    "SELECT nome, sobrenome FROM profissional WHERE id = %s", (pro_id))
-                pro_data = cursor.fetchone()
-                if pro_data:
+                    "SELECT nome, categoria, telefone, email FROM profissional WHERE id = %s", 
+                    (profissional_id,)
+                )
+                profissional_data = cursor.fetchone()
+                if profissional_data:
                     if not nome:
-                        nome = pro_data[0]
-                    if not sobrenome:
-                        sobrenome = pro_data[1]
+                        nome = profissional_data[0]
+                    if not categoria:
+                        categoria = profissional_data[1]
+                    if not telefone:
+                        telefone = profissional_data[2]
+                    if not email:
+                        email = profissional_data[3]
 
-                # verifica se o arquivo foi enviado
-                if photo:
-                    filename = secure_filename(photo.filename)
-                    photo.save(os.path.join(
-                        app.config['UPLOAD_FOLDER'], filename))
-                    photo_path = os.path.join(
-                        app.config['UPLOAD_FOLDER'], filename)
-                else:
-                    photo_path = None
+            # Atualiza os dados do profissional
+            cursor.execute(
+                "UPDATE profissional SET nome = %s, categoria = %s, telefone = %s, email = %s " 
+                "WHERE id = %s",(nome, categoria, telefone, email, profissional_id)
+            )
 
-                cursor.execute(
-                    "UPDATE profissional SET nome = %s, sobrenome = %s, photo=%s WHERE id = %s",
-                    (nome, sobrenome, photo_path, pro_id)
-                )
-            else:
-                cursor.execute(
-                    "UPDATE profissional SET nome = %s, sobrenome =%s, WHERE id = %s",
-                    (nome, sobrenome, pro_id)
-                )
             bancoBT.commit()
             return redirect('/perfilPro')
+
         except (MySQLError, IntegrityError) as db_error:
             bancoBT.rollback()
             abort(500, description=str(db_error))
@@ -550,7 +510,6 @@ class UpdateUserP(MethodView):
             abort(500, description=str(file_error))
         finally:
             cursor.close()
-
 
 class Services(MethodView):
     '''
@@ -565,7 +524,7 @@ class Services(MethodView):
         if pro_id:
             with bancoBT.cursor() as cursor:
                 cursor.execute(
-                    "SELECT nome, sobrenome FROM profissional WHERE id = %s",
+                    "SELECT nome, categoria FROM profissional WHERE id = %s",
                     (pro_id,)
                 )
                 pro_data = cursor.fetchone()
@@ -632,8 +591,6 @@ class Services(MethodView):
         finally:
             if cursor:
                 cursor.close()
-
-# SEM CONTROLE DE SESSAO
 
 
 class Horarios(MethodView):
@@ -759,7 +716,7 @@ class Agendamento(MethodView):
         cursor = bancoBT.cursor()
 
         cursor.execute(
-            "SELECT nome, sobrenome FROM profissional WHERE id = %s", (
+            "SELECT nome, categoria, telefone, endereco FROM profissional WHERE id = %s", (
                 prof_id,)
         )
 
@@ -837,7 +794,12 @@ class Agendamento(MethodView):
         print(f"profissional_id: {prof_id}")
 
         # Validações básicas
-        if not data_agendamento or not hora_agendamento or not servico_id or not cliente_id or not prof_id:
+        if (
+                not data_agendamento or
+                not hora_agendamento or
+                not servico_id or
+                not cliente_id or
+                not prof_id):
             abort(400, description="Preencha todos os campos")
 
         data_hora_agendamento = f"{data_agendamento} {hora_agendamento}:00"
@@ -894,7 +856,8 @@ class Agendamento(MethodView):
         )
         servico_tempo = cursor.fetchone()[0]
 
-        data_hora_inicio = datetime.strptime(data_hora_agendamento, "%Y-%m-%d %H:%M:%S")
+        data_hora_inicio = datetime.strptime(
+            data_hora_agendamento, "%Y-%m-%d %H:%M:%S")
         data_hora_fim = data_hora_inicio + servico_tempo
 
         cursor.execute(
@@ -954,7 +917,7 @@ class Agenda(MethodView):
         SELECT 
             a.data_agendamento,
             p.nome AS profissional_nome,
-            p.sobrenome AS profissional_sobrenome,
+            p.categoria AS profissional_categoria,
             s.titulo AS servico_titulo,
             s.tempo AS duracao_servico,
             ADDTIME(a.data_agendamento, s.tempo) AS hora_fim

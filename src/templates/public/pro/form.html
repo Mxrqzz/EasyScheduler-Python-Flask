@@ -53,21 +53,38 @@
               </span>
             </div>
 
-            <!--Sobrenome-->
+            <!--Categoria-->
             <div class="input-box">
-              <label for="lastname">Sobrenome:</label>
+              <label for="category">Categoria:</label>
               <input
-                id="lastname"
+                id="category"
                 type="text"
-                name="lastname"
+                name="category"
                 maxlength="30"
                 required
               />
               <span class="error-msg" style="display: none">
-                Preencha um sobrenome.
+                Preencha uma categoria (Ex: Barbeiro).
               </span>
             </div>
-
+            <!--Telefone-->
+            <div class="input-box">
+              <label for="telefone">Telefone:</label>
+              <input id="telefone" type="text" name="phone" maxlength="11" />
+              <span class="error-msg" style="display: none">
+                Insira um Telefone.
+              </span>
+            </div>
+            <!--Endereço-->
+            <div class="input-box">
+              <label for="endereco">Endereço:</label>
+              <input
+                id="endereco"
+                type="text"
+                name="endereco"
+                maxlength="150"
+              />
+            </div>
             <!--Email-->
             <div class="input-box">
               <label for="email">E-mail:</label>
@@ -117,13 +134,15 @@
 
             <!--Botão-->
             <div class="btn-form">
-              <button  class="button" type="submit" name="submit">Continuar</button>
+              <button class="button" type="submit" name="submit">
+                Continuar
+              </button>
             </div>
           </div>
         </form>
       </div>
     </div>
 
-    <script src="static/js/form.js"></script>
+    <script src="static/js/formPro.js"></script>
   </body>
 </html>

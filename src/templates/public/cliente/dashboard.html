@@ -29,10 +29,11 @@
       <div class="container-servicos">
         <ul>
           {% for service in services %}
-          <li onclick="redirectToAgendaServico({{ service[5] }}')">
+          <li onclick="redirectToAgenda('service', {{ service[6] }})">
             <h4>{{ service[1] }} - R$ {{ service[2] }},00</h4>
             <p>Tempo: {{ service[3] }} min</p>
-            <p>Profissional: {{ service[6] }} {{ service[7] }}</p>
+            <p>Profissional: {{ service[7] }}</p>
+            <p>{{ service[8] }}</p>
           </li>
           {% endfor %}
         </ul>
@@ -41,15 +42,15 @@
       <div class="container-profissionais">
         <ul>
           {% for professional in pro %}
-          <li onclick="redirectToAgenda({{ professional[0] }})">
+          <li onclick="redirectToAgenda('professional', {{ professional[0] }})">
             <img
               alt=""
               class="photo-circle"
               id="profile-photo"
               src="{{photo or 'https://via.placeholder.com/150'}}"
             />
-            <p>{{ professional[1] }} {{ professional[2] }}</p>
-            <p>"Especialidade"</p>
+            <h4>{{ professional[1] }}</h4>
+            <p>{{ professional[2] }}</p>
           </li>
           {% endfor %}
         </ul>

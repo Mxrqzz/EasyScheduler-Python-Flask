@@ -1,6 +1,6 @@
 const form = document.getElementById("form");
 const nome = document.getElementById("name");
-const sobrenome = document.getElementById("lastname");
+const categoria = document.getElementById("category");
 const email = document.getElementById("email");
 const senha = document.getElementById("password");
 const confirmacaoSenha = document.getElementById("confirmPassword");
@@ -16,8 +16,8 @@ form.addEventListener("submit", (event) => {
 nome.addEventListener("blur", () => {
   checkInputName();
 });
-sobrenome.addEventListener("blur", () => {
-  checkInputLastname();
+categoria.addEventListener("blur", () => {
+  checkInputCategory();
 });
 
 email.addEventListener("blur", () => {
@@ -43,15 +43,15 @@ function checkInputName() {
   }
 }
 
-// Função para verificar sobrenome
-function checkInputLastname() {
-  const sobrenomeValue = sobrenome.value.trim();
+// Função para verificar categoria
+function checkInputCategory() {
+  const categoriaValue = categoria.value.trim();
 
-  if (sobrenomeValue === "") {
-    errorInput(sobrenome, "Preencha um sobrenome!");
+  if (categoriaValue === "") {
+    errorInput(categoria, "Preencha uma categoria!");
     return false;
   } else {
-    clearError(sobrenome);
+    clearError(categoria);
     return true;
   }
 }
@@ -108,7 +108,7 @@ function checkInputConfirmPassword() {
 function checkForm() {
   //verificar individualmente cada campo do formulário
   const isNameValid = checkInputName();
-  const isLastnameValid = checkInputLastname();
+  const isCategoryValid = checkInputCategory();
   const isEmailValid = checkInputEmail();
   const isPasswordValid = checkInputPassword();
   const isConfirmPasswordValid = checkInputConfirmPassword();
@@ -116,7 +116,7 @@ function checkForm() {
   // Retorna true se todos os campos forem válidos, caso contrário, retorna false
   return (
     isNameValid &&
-    isLastnameValid &&
+    isCategoryValid &&
     isEmailValid &&
     isPasswordValid &&
     isConfirmPasswordValid

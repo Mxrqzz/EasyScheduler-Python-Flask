@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Beauty Time - Cadastro Cliente</title>
     <link rel="stylesheet" href="static/css/style.css" />
+  
   </head>
   <body>
     <!--Menu Superior-->
@@ -68,6 +69,19 @@
               </span>
             </div>
 
+            <!--Telefone-->
+            <div class="input-box">
+              <label for="telefone">Telefone:</label>
+              <input
+                id="telefone"
+                type="text"
+                name="phone"
+                maxlength="11"
+              />
+              <span class="error-msg" style="display: none">
+                Insira um Telefone.
+              </span>
+            </div>
             <!--Email-->
             <div class="input-box">
               <label for="email">E-mail:</label>
@@ -117,7 +131,9 @@
 
             <!--Botão-->
             <div class="btn-form">
-              <button  class="button" type="submit" name="submit">Continuar</button>
+              <button class="button" type="submit" name="submit">
+                Continuar
+              </button>
             </div>
           </div>
         </form>

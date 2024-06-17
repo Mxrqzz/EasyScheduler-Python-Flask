@@ -36,7 +36,8 @@
             alt="Foto de perfil"
             class="photo-circle"
           />
-          <h3>{{nome}} {{sobrenome}}</h3>
+          <h3>{{nome}}</h3>
+          <h3>{{categoria}}</h3>
           <h3>{{email}}</h3>
           <h4>#{{id}}</h4>
         </div>
@@ -84,16 +85,16 @@
                   />
                 </label>
               </div>
-              <!--Sobrenome-->
+              <!--categoria-->
               <div class="input-box">
-                <label for="lastname"
-                  >Sobrenome:
+                <label for="category"
+                  >Categoria:
                   <br />
                   <input
                     type="text"
                     id="lastname"
-                    name="lastname"
-                    placeholder="{{sobrenome}}"
+                    name="category"
+                    placeholder="{{categoria}}"
                     readonly
                   />
                 </label>
@@ -138,124 +139,57 @@
           </div>
         </form>
       </div>
-      <div id="info-login" class="content-box">
-        <!--titulo-->
-        <h2>Informações de Login:</h2>
-          <form id="login-edit-form" method="POST" action="/updateLoginEmail">
-            <div class="inputs">
-              <div class="left-side">
-                <!--Email-->
-                <div class="input-box">
-                  <label for="new_email">
-                    Email:
-                    <br />
-                    <input
-                      type="email"
-                      name="new_email"
-                      id="new_email"
-                      placeholder="{{email}}"
-                      readonly
-                    />
-                  </label>
-                </div>
-              </div>
-            </div>
-            <div class="button-cfg">
-              <button id="login-edit-button">Editar</button>
-              <button id="login-save-button" style="display: none">
-                Salvar
-              </button>
-              <button id="login-cancel-button" style="display: none">
-                Cancelar
-              </button>
-            </div>
-          </form>
-          <form
-            id="login-edit-form-password"
-            method="POST"
-            action="/updateLoginPassword"
-          >
-            <div class="inputs">
-              <div class="left-side">
-                <!--Senha-->
-                <div class="input-box">
-                  <label for="currentPassword">
-                    Senha Atual:
-                    <br />
-                    <input
-                      type="password"
-                      id="currentPassword"
-                      name="currentPassword"
-                      placeholder="*********"
-                      readonly
-                    />
-                  </label>
-                </div>
-              </div>
-              <div class="new-password" style="display: none">
-                <!--Nova Senha-->
-                <div class="input-box">
-                  <label for="newPassword">
-                    Nova senha:
-                    <br />
-                    <input
-                      type="password"
-                      name="newPassword"
-                      id="newPassword"
-                      placeholder="insira a nova senha"
-                    />
-                  </label>
-                </div>
-                <!--Confirmar nova senha-->
-                <div class="input-box">
-                  <label for="confirmNewPassword">
-                    Confirme a Nova senha:
-                    <br />
-                    <input
-                      type="password"
-                      id="confirmNewPassword"
-                      name="confirmNewPassword"
-                      placeholder="Confirme a nova senha"
-                    />
-                  </label>
-                  <p></p>
-                </div>
-                <p style="color: blueviolet; font-weight: 300; font-size: 13px">
-                  Para alterar sua senha insira sua senha atual
-                </p>
-              </div>
-            </div>
-            <div class="button_cfg">
-              <button id="password-edit-button">Editar</button>
-              <button id="password-save-button" style="display: none">
-                Salvar Senha
-              </button>
-              <button id="password-cancel-button" style="display: none">
-                Cancelar
-              </button>
-            </div>
-          </form>
-        </div>
-        <div id="info-phone" class="content-box">
-          <h2>Telefones:</h2>
-          <form id="phone-form" method="POST" action="/updatePhone">
-            <div class="telefones">
+      <!--TELEFONE e EMAIL-->
+      <div id="info-user" class="content-box">
+        <h2>Informações do Contato:</h2>
+        <form
+          id="login-edit-form"
+          action="/updateUserP"
+          method="post"
+          enctype="multipart/form-data"
+        >
+          <div class="inputs">
+            <div class="right-side">
+              <!--Telefone-->
               <div class="input-box">
-                <label for="phone1">Telefone 1:<br />
-                  <input type="tel" name="phone1" id="phone1" placeholder="Telefone 1" />
+                <label for="phone"
+                  >Telefone:
+                  <br />
+                  <input
+                    type="text"
+                    name="phone"
+                    id="phone"
+                    placeholder="{{telefone}}"
+                    maxlength="11"
+                    readonly
+                  />
                 </label>
               </div>
+              <!--Email-->
               <div class="input-box">
-                <label for="phone2">Telefone 2:<br />
-                  <input type="tel" name="phone2" id="phone2" placeholder="Telefone 2" />
+                <label for="email"
+                  >Email:
+                  <br />
+                  <input
+                    type="text"
+                    id="email"
+                    name="email"
+                    maxlength="50"
+                    placeholder="{{email}}"
+                    readonly
+                  />
                 </label>
               </div>
             </div>
-            <div class="button-cfg">
-              <button type="submit">Salvar</button>
-            </div>
-          </form>
-        </div>
+
+          </div>
+          <div class="button-cfg">
+            <button id="login-edit-button">Editar</button>
+            <button id="login-save-button" style="display: none">Salvar</button>
+            <button id="login-cancel-button" style="display: none">Cancelar</button>
+          </div>
+        </form>
+      </div>
     </div>
   </body>
   <script src="static/js/script.js"></script>

@@ -59,6 +59,7 @@
         <h1>Configurações da conta</h1>
         <p>Visualize e atualize os dados da sua conta.</p>
       </div>
+      <!--Nome e Sobrenome-->
       <div id="info-user" class="content-box">
         <h2>Informações do Usúario:</h2>
         <form
@@ -136,6 +137,58 @@
             <button id="cancel-button" style="display: none">Cancelar</button>
           </div>
         </form>
+      </div>
+      <!--TELEFONE e EMAIL-->
+      <div id="info-user" class="content-box">
+        <h2>Informações do Contato:</h2>
+        <form
+          id="login-edit-form"
+          action="/updateUserC"
+          method="post"
+          enctype="multipart/form-data"
+        >
+          <div class="inputs">
+            <div class="right-side">
+              <!--Telefone-->
+              <div class="input-box">
+                <label for="phone"
+                  >Telefone:
+                  <br />
+                  <input
+                    type="text"
+                    name="phone"
+                    id="phone"
+                    placeholder="{{telefone}}"
+                    maxlength="11"
+                    readonly
+                  />
+                </label>
+              </div>
+              <!--Email-->
+              <div class="input-box">
+                <label for="email"
+                  >Email:
+                  <br />
+                  <input
+                    type="text"
+                    id="email"
+                    name="email"
+                    maxlength="50"
+                    placeholder="{{email}}"
+                    readonly
+                  />
+                </label>
+              </div>
+            </div>
+
+          </div>
+          <div class="button-cfg">
+            <button id="login-edit-button">Editar</button>
+            <button id="login-save-button" style="display: none">Salvar</button>
+            <button id="login-cancel-button" style="display: none">Cancelar</button>
+          </div>
+        </form>
+      </div>
       </div>
     </div>
   </body>

@@ -69,7 +69,8 @@ cancel.addEventListener("click", function (event) {
 var editLogin = document.getElementById("login-edit-button");
 var saveLogin = document.getElementById("login-save-button");
 var cancelLogin = document.getElementById("login-cancel-button");
-var emailInput = document.getElementById("new_email");
+var phoneInput = document.getElementById("phone");
+var emailInput = document.getElementById("email")
 var formEmail = document.getElementById("login-edit-form");
 
 editLogin.addEventListener("click", function (event) {
@@ -77,6 +78,7 @@ editLogin.addEventListener("click", function (event) {
   editLogin.style.display = "none";
   saveLogin.style.display = "inline";
   cancelLogin.style.display = "inline";
+  phoneInput.removeAttribute("readonly");
   emailInput.removeAttribute("readonly");
 });
 
@@ -107,8 +109,12 @@ function showHours(day) {
   }
 }
 
-function redirectToAgenda(profissionalId) {
-  window.location.href = `/agendamento?profissional_id=${profissionalId}`;
+function redirectToAgenda(type, id) {
+  if (type === 'service') {
+    window.location.href = `/agendamento?profissional_id=${id}`;
+  } else if (type === 'professional') {
+    window.location.href = `/agendamento?profissional_id=${id}`;
+  }
 }
 
 document.addEventListener("DOMContentLoaded", function() {

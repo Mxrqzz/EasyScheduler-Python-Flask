@@ -49,16 +49,20 @@
               <h3>Horario:</h3>
               <h4>
                 {{agendamento[0].strftime("%H:%M")}} -
-                {{agendamento[5].strftime("%H:%M")}}
+                {{agendamento[6].strftime("%H:%M")}}
               </h4>
             </div>
             <div class="agenda-row">
               <h3>Servico:</h3>
-              <h4>{{agendamento[3]}}</h4>
+              <h4>{{agendamento[4]}}</h4>
             </div>
             <div class="agenda-row">
               <h3>Cliente:</h3>
               <h4>{{agendamento[1]}} {{agendamento[2]}}</h4>
+            </div>
+            <div class="agenda-row">
+              <h3>Telefone:</h3>
+              <h4>{{agendamento[3]}}</h4>
             </div>
           </div>
           {% endfor %}
