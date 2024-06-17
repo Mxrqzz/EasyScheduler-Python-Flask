@@ -571,8 +571,11 @@ select {
 }
 
 .agenda-box-service{
-  display: grid;
+  display: flex;
   margin-top: 15px;
+  background-color: #7c27f2;
+  align-items: center;
+  text-align: center;
 }
 
 .input-agenda {
@@ -631,4 +634,23 @@ td {
 
 .table-agenda tr:nth-child(even) {
   background-color: #9549ff;
+}
+
+.agenda-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  text-align: center;
+}
+
+.agendamento {
+  margin: 10px 10px 10px 10px;
+  border: 5px solid;
+  padding: 10px 20px;
+  border-color: #3b1373;
+  border-radius: 15px;
+}
+
+.container-agendamentos {
+  display: flex;
 }

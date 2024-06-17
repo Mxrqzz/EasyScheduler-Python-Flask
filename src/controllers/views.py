@@ -1,6 +1,7 @@
 '''Arquivo responsavel pelas classes e funções'''
 
 import os
+from datetime import datetime
 from flask import session, render_template, redirect, request, jsonify, abort, current_app as app
 from flask.views import MethodView
 from pymysql import MySQLError, IntegrityError
@@ -316,7 +317,41 @@ class DashboardPro(MethodView):
         Retorna:
         render_template: Uma renderização do template 'public/pro/dashboard.html'
         """
-        return render_template('public/pro/dashboard.html')
+        profissional_id = session.get('profissional_id')
+
+        if not profissional_id:
+            return redirect('/login')
+
+        query = """
+        SELECT 
+            a.data_agendamento,
+            c.nome AS cliente_nome,
+            c.sobrenome AS cliente_sobrenome,
+            s.titulo AS servico_titulo,
+            s.tempo AS duracao_servico,
+            ADDTIME(a.data_agendamento, s.tempo) AS hora_fim
+        FROM 
+            agendamento a
+        JOIN 
+            cliente c ON a.cliente_id = c.id
+        JOIN 
+            agendamento_servico ags ON a.id = ags.agendamento_id
+        JOIN 
+            servico s ON ags.servico_id = s.id
+        WHERE 
+            a.profissional_id = %s
+        ORDER BY 
+            a.data_agendamento;
+        """
+
+        cursor = bancoBT.cursor()
+
+        cursor.execute(query, (profissional_id,))
+        agendamentos = cursor.fetchall()
+
+        return render_template('public/pro/dashboard.html',
+                               profissional_id=profissional_id,
+                               agendamentos=agendamentos)
 
 
 class PerfilCliente(MethodView):
@@ -711,10 +746,15 @@ class Agendamento(MethodView):
         '''
         Renderiza o arquivo do agendamento
         '''
+        cliente_id = session.get('cliente_id')
+
+        if not cliente_id:
+            return redirect('/login')
+
         prof_id = request.args.get('profissional_id')
 
         if not prof_id:
-            abort(400, description="Missing professional ID")
+            return redirect('/dashboardClient')
 
         cursor = bancoBT.cursor()
 
@@ -726,8 +766,9 @@ class Agendamento(MethodView):
         dados_pro = cursor.fetchone()
 
         cursor.execute(
-            "SELECT dia_semana, fechado, hora_inicio, hora_fim FROM horarios"
-            " WHERE profissional_id = %s", (prof_id,)
+            "SELECT dia_semana, fechado, hora_inicio, hora_fim FROM horarios "
+            "WHERE profissional_id = %s", (
+                prof_id,)
         )
 
         horarios_result = cursor.fetchall()
@@ -738,22 +779,200 @@ class Agendamento(MethodView):
                               'hora_fim': None} for dia in dias_semana}
 
         for horario in horarios_result:
-            dias_semana, fechado, hora_inicio, hora_fim = horario
-            horarios_pro[dias_semana] = {
+            dia_semana, fechado, hora_inicio, hora_fim = horario
+            horarios_pro[dia_semana] = {
                 'fechado': fechado,
                 'hora_inicio': hora_inicio,
                 'hora_fim': hora_fim
             }
 
         cursor.execute(
-            "SELECT id, titulo, preco, tempo, descricao "
-            "FROM servico WHERE profissional_id = %s", (prof_id,)
+            "SELECT id, titulo, preco, tempo, descricao FROM servico WHERE profissional_id = %s", (
+                prof_id,)
         )
         services = cursor.fetchall()
 
+        cursor.execute(
+            "SELECT data_agendamento, s.tempo FROM agendamento a JOIN agendamento_servico ags "
+            "ON a.id = ags.agendamento_id JOIN servico s ON ags.servico_id = s.id "
+            "WHERE a.profissional_id = %s", (
+                prof_id,)
+        )
+
+        agendamentos = cursor.fetchall()
+
+        horarios_indisponiveis = []
+        for agendamento in agendamentos:
+            data_agendamento, tempo = agendamento
+            horario_inicio = data_agendamento.strftime("%d/%m %H:%M")
+            horario_fim = (data_agendamento + tempo).strftime("%H:%M")
+            horarios_indisponiveis.append(
+                f"{horario_inicio} - {horario_fim}")
+
         return render_template(
             'public/cliente/agendamento.html',
+            cliente_id=cliente_id,
             dados_pro=dados_pro,
             horarios_pro=horarios_pro,
-            services=services
+            services=services,
+            horarios_indisponiveis=horarios_indisponiveis,
+            prof_id=prof_id
         )
+
+    def post(self):
+        '''
+        Insere dados no banco de dados
+        '''
+        data_agendamento = request.form.get('data_agendamento')
+        hora_agendamento = request.form.get('hora_agendamento')
+        servico_id = request.form.get('servico')
+        cliente_id = request.form.get('cliente_id')
+        prof_id = request.form.get('profissional_id')
+
+        # Debugging prints
+        print(f"data_agendamento: {data_agendamento}")
+        print(f"hora_agendamento: {hora_agendamento}")
+        print(f"servico_id: {servico_id}")
+        print(f"cliente_id: {cliente_id}")
+        print(f"profissional_id: {prof_id}")
+
+        # Validações básicas
+        if not data_agendamento or not hora_agendamento or not servico_id or not cliente_id or not prof_id:
+            abort(400, description="Preencha todos os campos")
+
+        data_hora_agendamento = f"{data_agendamento} {hora_agendamento}:00"
+
+        # Converte a data de agendamento para um objeto datetime
+        data_obj = datetime.strptime(data_agendamento, "%Y-%m-%d")
+        # Nome do dia da semana em inglês
+        dia_semana_en = data_obj.strftime("%A")
+
+        # Mapeamento do nome dos dias da semana de inglês para português
+        dias_semana = {
+            'Sunday': 'Domingo',
+            'Monday': 'Segunda',
+            'Tuesday': 'Terça',
+            'Wednesday': 'Quarta',
+            'Thursday': 'Quinta',
+            'Friday': 'Sexta',
+            'Saturday': 'Sábado'
+        }
+
+        dia_semana = dias_semana.get(dia_semana_en)
+
+        # Capturar os horários do profissional para o dia da semana específico
+        cursor = bancoBT.cursor()
+        cursor.execute(
+            "SELECT fechado, hora_inicio, hora_fim FROM horarios "
+            "WHERE profissional_id = %s AND dia_semana = %s", (
+                prof_id, dia_semana)
+        )
+
+        horario_profissional = cursor.fetchone()
+
+        if not horario_profissional:
+            abort(400, description="Horário não encontrado para o profissional")
+
+        fechado, hora_inicio, hora_fim = horario_profissional
+
+        # Se o dia estiver fechado, retornar erro
+        if fechado:
+            abort(400, description="O profissional não atende neste dia")
+
+        # Converter hora_inicio e hora_fim para datetime.time
+        hora_inicio_time = (datetime.min + hora_inicio).time()
+        hora_fim_time = (datetime.min + hora_fim).time()
+
+        hora_agendamento_time = datetime.strptime(
+            hora_agendamento, "%H:%M").time()
+        if hora_agendamento_time < hora_inicio_time or hora_agendamento_time > hora_fim_time:
+            abort(400, description="Horário fora do período de atendimento")
+
+        # Verificar se o horário está disponível considerando a duração do serviço
+        cursor.execute(
+            "SELECT tempo FROM servico WHERE id = %s", (servico_id,)
+        )
+        servico_tempo = cursor.fetchone()[0]
+
+        data_hora_inicio = datetime.strptime(data_hora_agendamento, "%Y-%m-%d %H:%M:%S")
+        data_hora_fim = data_hora_inicio + servico_tempo
+
+        cursor.execute(
+            "SELECT data_agendamento, s.tempo FROM agendamento a JOIN agendamento_servico ags "
+            "ON a.id = ags.agendamento_id JOIN servico s ON ags.servico_id = s.id "
+            "WHERE a.profissional_id = %s",
+            (prof_id,)
+        )
+
+        agendamentos = cursor.fetchall()
+
+        for agendamento in agendamentos:
+            agendamento_inicio, agendamento_tempo = agendamento
+            agendamento_fim = agendamento_inicio + agendamento_tempo
+
+            if (data_hora_inicio < agendamento_fim and data_hora_fim > agendamento_inicio):
+                abort(400, description="Horário indisponível")
+
+        # Inserir novo agendamento
+        cursor.execute(
+            "INSERT INTO agendamento (data_agendamento, cliente_id, profissional_id) "
+            "VALUES (%s, %s, %s)",
+            (data_hora_agendamento, cliente_id, prof_id)
+        )
+        agendamento_id = cursor.lastrowid
+
+        # Inserir na tabela agendamento_servico
+        cursor.execute(
+            "INSERT INTO agendamento_servico (agendamento_id, servico_id) VALUES (%s, %s)",
+            (agendamento_id, servico_id)
+        )
+
+        print(f"dia: {dia_semana}")
+
+        bancoBT.commit()
+
+        return redirect('/agenda')
+
+
+class Agenda(MethodView):
+    '''
+    Tela responsavel pela tela agenda
+    '''
+
+    def get(self):
+        '''
+        renderiza o agenda.html
+        '''
+        cliente_id = session.get('cliente_id')
+
+        if not cliente_id:
+            return redirect('/login')
+
+        cursor = bancoBT.cursor()
+
+        query = """
+        SELECT 
+            a.data_agendamento,
+            p.nome AS profissional_nome,
+            p.sobrenome AS profissional_sobrenome,
+            s.titulo AS servico_titulo,
+            s.tempo AS duracao_servico,
+            ADDTIME(a.data_agendamento, s.tempo) AS hora_fim
+        FROM 
+            agendamento a
+        JOIN 
+            profissional p ON a.profissional_id = p.id
+        JOIN 
+            agendamento_servico ags ON a.id = ags.agendamento_id
+        JOIN 
+            servico s ON ags.servico_id = s.id
+        WHERE 
+            a.cliente_id = %s
+        ORDER BY 
+            a.data_agendamento;
+        """
+
+        cursor.execute(query, (cliente_id,))
+        agendamentos = cursor.fetchall()
+
+        return render_template('public/cliente/agenda.html', agendamentos=agendamentos)

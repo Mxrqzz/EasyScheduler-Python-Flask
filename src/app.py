@@ -38,3 +38,4 @@ app.add_url_rule(routes["horarios_route"], view_func=routes["horarios"])
 
 app.add_url_rule(routes["agendamento_route"], view_func=routes["agendamento"])
 
+app.add_url_rule(routes["agenda_route"], view_func=routes["agenda"])

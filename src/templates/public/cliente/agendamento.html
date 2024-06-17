@@ -1,161 +1,185 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="static/css/style.css" />
-    <title>Beauty Time - Agendamento</title>
-  </head>
-  <body>
-    <!--MENU TOPO-->
-    <div class="menu-superior">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="static/css/style.css" />
+  <title>Beauty Time - Agendamento</title>
+</head>
+<body>
+  <!--MENU TOPO-->
+  <div class="menu-superior">
+    <ul>
+      <li>
+        <a href="/dashboardClient">
+          <img
+            src="static/images/logo.svg"
+            alt="logo do BeautyTime"
+            width="335"
+            height="180"
+          />
+        </a>
+      </li>
+      <li><a href="/agenda">Agenda</a></li>
+      <li><a href="/perfilCliente">Perfil</a></li>
+      <li><a href="/logout">Sair</a></li>
+    </ul>
+  </div>
+
+  <div class="container-agenda">
+    <div class="title">
+      <h1>Agendamento</h1>
+      <p>Realize aqui os agendamento no Profissional escolhido.</p>
+    </div>
+
+    <div class="agenda-box">
+      <h4>Profissional :</h4>
+      
+      <p>{{ dados_pro[0] }} {{ dados_pro[1] }}</p>
+      <p style="color: gray; opacity: 20%;">#{{ prof_id }}</p>
+    </div>
+    <!--HORARIOS-->
+    <table class="table-agenda">
+      <br />
+      <h3>Horários de Atendimento:</h3>
+      <br />
+      <thead>
+        <tr>
+          <th>Dia da Semana</th>
+          <th>Fechado</th>
+          <th>Abertura</th>
+          <th>Encerramento</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for dia, horario in horarios_pro.items() %}
+        <tr>
+          <td>{{ dia }}</td>
+          <td>{{ 'Sim' if horario['fechado'] else 'Não' }}</td>
+          <td>
+            {{ horario['hora_inicio'] if not horario['fechado'] else '--' }}
+          </td>
+          <td>
+            {{ horario['hora_fim'] if not horario['fechado'] else '--' }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!--HORARIOS INDISPONIVEIS-->
+    <div class="indisponiveis">
+      <br />
+      <h3>Horários Indisponíveis:</h3>
       <ul>
-        <li>
-          <a href="/dashboardClient"
-            ><img
-              src="static/images/logo.svg"
-              alt="logo do BeautyTime"
-              width="335"
-              height="180"
-          /></a>
-        </li>
-        <li><a href="/agenda">Agenda</a></li>
-        <li><a href="/agendamento">Notificações</a></li>
-        <li><a href="/perfilCliente">Perfil</a></li>
-        <li><a href="/logout">Sair</a></li>
+        {% for horario in horarios_indisponiveis %}
+        <li>{{ horario }}</li>
+        {% endfor %}
       </ul>
     </div>
+    <!--FORMULARIO DE AGENDAMENTO-->
+    <div class="form">
+      <form action="/agendamento" id="agendamento-form" method="post">
+        <input type="hidden" name="cliente_id" value="{{ cliente_id }}" />
+        <input type="hidden" name="profissional_id" value="{{ prof_id }}" />
 
-    <div class="container-agenda">
-      <div class="title">
-        <h1>Agendamento</h1>
-        <p>Realize aqui os agendamento no Profissional escolhido.</p>
-      </div>
-
-      <div class="agenda-box">
-        <h4>Profissional :</h4>
-        <p>{{dados_pro[0]}} {{dados_pro[1]}}</p>
-      </div>
-      <!--HORARIOS-->
-      <table class="table-agenda">
-        <br />
-        <h3>Horários de Atendimento:</h3>
-        <br />
-        <thead>
-          <tr>
-            <th>Dia da Semana</th>
-            <th>Fechado</th>
-            <th>Abertura</th>
-            <th>Encerramento</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for dia, horario in horarios_pro.items() %}
-          <tr>
-            <td>{{ dia }}</td>
-            <td>{{ 'Sim' if horario.fechado else 'Não' }}</td>
-            <td>{{ horario.hora_inicio if not horario.fechado else '--' }}</td>
-            <td>{{ horario.hora_fim if not horario.fechado else '--' }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      <!--FORMULARIO DE AGENDAMENTO-->
-      <div class="form">
-        <form action="/agendamento" method="post">
-          <div class="agenda-box-service">
-            <div class="agenda-box">
-              <label for="service-select"
-                >Serviços:
-                <select name="servico" id="service-select">
-                  <option value=""></option>
-                  {% for service in services %}
-                  <option
-                    value="{{service[0]}}"
-                    data-preco="{{service[2]}}"
-                    data-tempo="{{service[3]}}"
-                  >
-                    {{service[1]}}
-                  </option>
-                  {% endfor %}
-                </select>
-              </label>
-            </div>
-            <p>Preço: <span id="price-service">Selecione um serviço</span></p>
-            <p>Tempo: <span id="time-service">Selecione um serviço</span></p>
-          </div>
+        <div class="agenda-box-service">
           <div class="agenda-box">
-            <label for="data-agendamento"
-              >Data:
-              <input
-                type="date"
-                name="data_agendamento"
-                id="data-agendamento"
-                required
-              />
+            <label for="service-select">
+              Serviços:
+              <select name="servico" id="service-select">
+                <option value=""></option>
+                {% for service in services %}
+                <option
+                  value="{{ service[0] }}"
+                  data-preco="{{ service[2] }}"
+                  data-tempo="{{ service[3] }}"
+                >
+                  {{ service[1] }}
+                </option>
+                {% endfor %}
+              </select>
             </label>
           </div>
-          <div class="agenda-box">
-            <label for="hora-agendamento"
-              >Hora:
-              <input
-                type="time"
-                name="hora_agendamento"
-                id="hora-agendamento"
-                required
-              />
-            </label>
-          </div>
-          <div class="agenda-box">
-            <button type="submit">Agendar</button>
-          </div>
-        </form>
-      </div>
+          <p>Preço: <span id="price-service">Selecione um serviço</span></p>
+          <p>Tempo: <span id="time-service">Selecione um serviço</span></p>
+        </div>
+        <div class="agenda-box">
+          <label for="data-agendamento">
+            Data:
+            <input
+              type="date"
+              name="data_agendamento"
+              id="data-agendamento"
+              required
+            />
+          </label>
+        </div>
+        <div class="agenda-box">
+          <label for="hora-agendamento">
+            Hora:
+            <input
+              type="time"
+              name="hora_agendamento"
+              id="hora-agendamento"
+              required
+            />
+          </label>
+        </div>
+        <div class="button">
+          <button type="submit">Agendar</button>
+        </div>
+      </form>
     </div>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        var serviceSelect = document.getElementById("service-select");
-        if (serviceSelect) {
-          serviceSelect.addEventListener("change", function () {
-            var selectedOption = this.options[this.selectedIndex];
-            var preco = selectedOption.getAttribute("data-preco");
-            var tempo = selectedOption.getAttribute("data-tempo");
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var serviceSelect = document.getElementById("service-select");
+      if (serviceSelect) {
+        serviceSelect.addEventListener("change", function () {
+          var selectedOption = this.options[this.selectedIndex];
+          var preco = selectedOption.getAttribute("data-preco");
+          var tempo = selectedOption.getAttribute("data-tempo");
 
-            document.getElementById("price-service").innerText = preco
-              ? "R$ " + preco + ",00"
-              : "Selecione um serviço";
-            document.getElementById("time-service").innerText = tempo
-              ? tempo + " min"
-              : "Selecione um serviço";
-          });
-        }
+          document.getElementById("price-service").innerText = preco
+            ? "R$ " + preco + ",00"
+            : "Selecione um serviço";
+          document.getElementById("time-service").innerText = tempo
+            ? tempo + " min"
+            : "Selecione um serviço";
+        });
+      }
 
-        document
-          .getElementById("agendamentoForm")
-          .addEventListener("submit", function (event) {
-            var formData = new FormData(this);
-            var date = formData.get("data_agendamento");
-            var time = formData.get("hora_agendamento");
-            var serviceId = formData.get("servico");
+      document
+        .getElementById("agendamento-form")
+        .addEventListener("submit", function (event) {
+          var formData = new FormData(this);
+          var date = formData.get("data_agendamento");
+          var time = formData.get("hora_agendamento");
+          var serviceId = formData.get("servico");
 
-            fetch(
-              `/check-availability?date=${date}&time=${time}&service=${serviceId}`
-            )
-              .then((response) => response.json())
-              .then((data) => {
-                if (!data.available) {
-                  alert(
-                    "Este horário não está disponível. Por favor, escolha outro horário."
-                  );
-                  event.preventDefault();
-                }
-              })
-              .catch((error) => {
-                console.error("Error checking availability:", error);
+          // Convert date to day of the week
+          var dateObj = new Date(date);
+          var dayOfWeek = dateObj.toLocaleString('pt-BR', { weekday: 'long' });
+
+          fetch(
+            `/check-availability?date=${date}&time=${time}&service=${serviceId}`
+          )
+            .then((response) => response.json())
+            .then((data) => {
+              if (!data.available) {
+                alert(
+                  "Este horário não está disponível. Por favor, escolha outro horário."
+                );
                 event.preventDefault();
-              });
-          });
-      });
-    </script>
-  </body>
+              }
+            })
+            .catch((error) => {
+              console.error("Error checking availability:", error);
+              event.preventDefault();
+            });
+        });
+    });
+  </script>
+</body>
 </html>

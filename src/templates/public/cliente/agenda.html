@@ -1,36 +1,32 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Beauty Time - Dashboard Profissional</title>
     <link rel="stylesheet" href="static/css/style.css" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.css"
-      rel="stylesheet"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.js"></script>
+    <title>BeautyTime - Agenda</title>
   </head>
   <body>
     <!--MENU TOPO-->
     <div class="menu-superior">
       <ul>
         <li>
-          <a href="/dashboardPro"
-            ><img
+          <a href="/dashboardClient">
+            <img
               src="static/images/logo.svg"
               alt="logo do BeautyTime"
               width="335"
               height="180"
-          /></a>
+            />
+          </a>
         </li>
-        <li><a href="/services">Serviços</a></li>
-        <li><a href="/horarios">Horários</a></li>
-        <li><a href="/perfilPro">Perfil</a></li>
+        <li><a href="/dashboardClient">Inicio</a></li>
+        <li><a href="/perfilCliente">Perfil</a></li>
         <li><a href="/logout">Sair</a></li>
       </ul>
     </div>
     <div id="digital-clock" class="relogio"></div>
+
     <div class="container-form">
       <div class="title">
         <h1>Agenda</h1>
@@ -57,7 +53,7 @@
               <h4>{{agendamento[3]}}</h4>
             </div>
             <div class="agenda-row">
-              <h3>Cliente:</h3>
+              <h3>Profissional:</h3>
               <h4>{{agendamento[1]}} {{agendamento[2]}}</h4>
             </div>
           </div>
@@ -65,6 +61,6 @@
         </div>
       </div>
     </div>
+    <script src="static/js/calendar.js"></script>
   </body>
-  <script src="static/js/calendar.js"></script>
 </html>
