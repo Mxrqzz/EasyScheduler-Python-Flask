@@ -13,6 +13,8 @@ Este projeto é uma aplicação de agendamento desenvolvida em Python, HTML, Jav
 
 ## Tecnologias
 - Python
-- HTML
+- Flask
 - JavaScript
+- MySQL
+- HTML
 - CSS
